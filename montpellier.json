@@ -1,0 +1,468 @@
+
+{
+    "type": "FeatureCollection",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+      }
+    },
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000001,
+          "Nom": "VÃ©loparc EuromÃ©decine",
+          "Adresse": "PÃ´le d'Ã©change L1",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34090,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.638752,
+          "gps_X": 3.828107,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50000
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.828107,
+            43.638752
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000002,
+          "Nom": "VÃ©loparc Occitanie",
+          "Adresse": "PÃ´le d'Ã©change L1",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34090,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.634692,
+          "gps_X": 3.848965,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50001
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.848965,
+            43.634692
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000003,
+          "Nom": "VÃ©loparc CircÃ©",
+          "Adresse": "PÃ´le d'Ã©change Odysseum L1",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.604781,
+          "gps_X": 3.919431,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway Odysseum, situÃ© dans le parking",
+          "ID TaM": 50002
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.919431,
+            43.604781
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000004,
+          "Nom": "VÃ©loparc Sabines",
+          "Adresse": "PÃ´le d'Ã©change L2",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34070,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.584352,
+          "gps_X": 3.859940,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50003
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.85994,
+            43.584352
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000005,
+          "Nom": "VÃ©loparc Notre-Dame de Sablassou",
+          "Adresse": "PÃ´le d'Ã©change L2",
+          "Commune": "CASTELNAU-LE-LEZ",
+          "Code INSEE": 34057,
+          "Code postal": 34170,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.633710,
+          "gps_X": 3.922178,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50004
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.922178,
+            43.63371
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000006,
+          "Nom": "VÃ©loparc Via Domitia",
+          "Adresse": "PÃ´le d'Ã©change L2",
+          "Commune": "CASTELNAU-LE-LEZ",
+          "Code INSEE": 34057,
+          "Code postal": 34170,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.646473,
+          "gps_X": 3.929433,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway",
+          "ID TaM": 50005
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.929433,
+            43.646473
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000007,
+          "Nom": "VÃ©loparc Jacou",
+          "Adresse": "PÃ´le d'Ã©change, Terminus L2",
+          "Commune": "JACOU",
+          "Code INSEE": 34120,
+          "Code postal": 34830,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.654521,
+          "gps_X": 3.912389,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway",
+          "ID TaM": 50006
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.912389,
+            43.654521
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000008,
+          "Nom": "VÃ©loparc Saint-Jean de VÃ©das Centre",
+          "Adresse": "PÃ´le d'Ã©change, Terminus L2",
+          "Commune": "SAINT-JEAN DE VÃ‰DAS",
+          "Code INSEE": 34270,
+          "Code postal": 34430,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.574861,
+          "gps_X": 3.831169,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50007
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.831169,
+            43.574861
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000009,
+          "Nom": "VÃ©loparc Gambetta",
+          "Adresse": "Parking Gambetta",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.605318,
+          "gps_X": 3.874241,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>SituÃ© dans le parking souterrain (pompes Ã  vÃ©lo disponibles)",
+          "ID TaM": 50008
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.874241,
+            43.605318
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000010,
+          "Nom": "VÃ©loparc ComÃ©die",
+          "Adresse": "Parking ComÃ©die",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.608919,
+          "gps_X": 3.880244,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>SituÃ© dans le parking souterrain (consigne Ã  casques et pompes Ã  vÃ©lo disponibles)",
+          "ID TaM": 50009
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.880244,
+            43.608919
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000011,
+          "Nom": "VÃ©loparc Europa",
+          "Adresse": "Parking Europa",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.608021,
+          "gps_X": 3.892577,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>SituÃ© dans le parking souterrain (pompes Ã  vÃ©lo disponibles)",
+          "ID TaM": 50010
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.892577,
+            43.608021
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000012,
+          "Nom": "VÃ©loparc Corum",
+          "Adresse": "Parking Corum",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.613552,
+          "gps_X": 3.882226,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>SituÃ© dans le parking souterrain (pompes Ã  vÃ©lo disponibles)",
+          "ID TaM": 50011
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.882226,
+            43.613552
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000014,
+          "Nom": "VÃ©loparc Juvignac",
+          "Adresse": "PÃ´le d'Ã©change, Terminus L3",
+          "Commune": "JUVIGNAC",
+          "Code INSEE": 34123,
+          "Code postal": 34990,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.617232,
+          "gps_X": 3.809584,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50013
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.809584,
+            43.617232
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000015,
+          "Nom": "VÃ©loparc Mosson",
+          "Adresse": "PÃ´le d'Ã©change L1 / L3",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34080,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.616354,
+          "gps_X": 3.819194,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50014
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.819194,
+            43.616354
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000016,
+          "Nom": "VÃ©loparc Garcia Lorca",
+          "Adresse": "PÃ´le d'Ã©change L4",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34070,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.591007,
+          "gps_X": 3.890990,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking souterrain",
+          "ID TaM": 50015
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.89099,
+            43.591007
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000017,
+          "Nom": "VÃ©loparc PÃ©rols Centre",
+          "Adresse": "PÃ´le d'Ã©change L3",
+          "Commune": "PÃ‰ROLS",
+          "Code INSEE": 34198,
+          "Code postal": 34470,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.565064,
+          "gps_X": 3.957366,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway, situÃ© dans le parking",
+          "ID TaM": 50016
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.957366,
+            43.565064
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000018,
+          "Nom": "VÃ©loparc PÃ©rols Ã‰tang de l'Or",
+          "Adresse": "PÃ´le d'Ã©change, Terminus L3",
+          "Commune": "PÃ‰ROLS",
+          "Code INSEE": 34198,
+          "Code postal": 34470,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.557614,
+          "gps_X": 3.963559,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway",
+          "ID TaM": 50017
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.963559,
+            43.557614
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000019,
+          "Nom": "VÃ©loparc Lattes Centre",
+          "Adresse": "PÃ´le d'Ã©change, Terminus L3",
+          "Commune": "LATTES",
+          "Code INSEE": 34129,
+          "Code postal": 34970,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.570469,
+          "gps_X": 3.905040,
+          "Texte associe": "VÃ©loparc sous vidÃ©osurveillance<br>Gratuit pour les abonnÃ©s TaM<br>A proximitÃ© de la station de tramway",
+          "ID TaM": 50018
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.90504,
+            43.570469
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "ID": 5000020,
+          "Nom": "VÃ©loparc Saint-Roch",
+          "Adresse": "101 rue Alexandra David NÃ©el ",
+          "Commune": "MONTPELLIER",
+          "Code INSEE": 34172,
+          "Code postal": 34000,
+          "Theme": "VÃ©lomagg' vÃ©loparcs",
+          "Categorie": 5,
+          "gps_Y": 43.603556,
+          "gps_X": 3.879052,
+          "Texte associe": "<p>V&eacute;loparc sous vid&eacute;osurveillance, situ&eacute; dans le parking<br />Acc&egrave;s depuis la rue Jules Ferry, c&ocirc;t&eacute; tramway, niveau 0 cage escalier B<br />Gratuit pour les abonn&eacute;s TaM<br />A proximit&eacute; de la station ",
+          "ID TaM": 50019
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.879052,
+            43.603556
+          ]
+        }
+      }
+    ]
+  }

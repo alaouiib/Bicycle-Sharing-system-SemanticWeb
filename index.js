@@ -12,13 +12,14 @@ let dataString = "";
 // let Lyon_Data = [];
 const get_Saintetienne_Data = require("./saint-etienne-data");
 const get_Lyon_Data = require("./lyon-data");
+get_data(dataString, FinalData);
 setInterval(() => {
   dataString = "";
   FinalData = [];
   Sainte_si = [];
   Sainte_ss = [];
   get_data(dataString, FinalData);
-}, 3000);
+}, 50000);
 
 // parser Lyon: https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171
 // parser rennes
