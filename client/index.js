@@ -26,20 +26,45 @@ var vm = new Vue({
         let ADDRESS = this.list[result].ADDRESS.value;
         let FREE_BIKES = this.list[result].FREE_BIKES.value;
         let label = this.list[result].label.value;
-        var myIcon = L.icon({
-          iconUrl:
-            `https://www.velivert.fr/sites/default/files/markers/vert-${FREE_BIKES}.png`,
-          iconSize: [50, 40],
-          iconAnchor: [25, 20]
-        });
-        const marker = L.marker([lat, lon], { icon: myIcon}).addTo(this.mymap);
+        let LAST_UPDATE = this.list[result].LAST_UPDATE.value;
+        LAST_UPDATE = moment.unix(LAST_UPDATE).format("DD/MM/YYYY à HH:mm:ss"); // YYYY-MM-DDTHH:mm:ss
+
+        if (FREE_BIKES == 0 || FREE_BIKES == 1 || FREE_BIKES == 2 ) {
+          var myIcon = L.icon({
+            iconUrl: `https://www.velivert.fr/sites/default/files/markers/rouge-${FREE_BIKES}.png`,
+
+            iconSize: [40, 30],
+            iconAnchor: [20, 15]
+          });
+        } else {
+          // create new icons with photoshop
+          if (FREE_BIKES <= 30) {
+            var myIcon = L.icon({
+              iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-${FREE_BIKES}.png`,
+              iconSize: [40, 30],
+              iconAnchor: [20, 15]
+            });
+          }else{
+            var myIcon = L.icon({
+              iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-30plus.png`,
+              iconSize: [40, 30],
+              iconAnchor: [20, 15]
+            }); 
+          }
+        }
+
+        const marker = L.marker([lat, lon], { icon: myIcon }).addTo(this.mymap);
+
         this.mymap.createPane("labels");
-        this.mymap.getPane('labels').style.zIndex = 650;
+        this.mymap.getPane("labels").style.zIndex = 650;
 
         marker.bindPopup(
-          `<b>Adresse: </b>${ADDRESS} <br> <b>velos disponibles:</b> ${FREE_BIKES}<br> <b>Nom:</b> ${label}`
+          `<b>Adresse: </b>${ADDRESS} <br> 
+          <b>velos disponibles:</b> ${FREE_BIKES}<br>
+           <b>Nom:</b> ${label}<br>
+           <b>At time:</b> ${LAST_UPDATE}`
         );
-        
+
         this.markers.push(marker);
       }
     }
@@ -48,7 +73,7 @@ var vm = new Vue({
     let flag = true;
     this.mymap = L.map("mapid");
     if (flag) {
-      this.mymap.setView([45.7696005888254260, 4.8376084367310748], 7);
+      this.mymap.setView([45.769600588825426, 4.8376084367310748], 7);
       flag = false;
     }
     const attribution =
@@ -56,6 +81,59 @@ var vm = new Vue({
     const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const tiles = L.tileLayer(tileUrl, { attribution });
     tiles.addTo(this.mymap);
+    // test
+
+    // fin test
+    this.make_request(`query=PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+    
+    SELECT ?label ?lat ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE.
+      ?station  rel:COMMUNE ?COMMUNE.
+    }`);
+
+    setInterval(() => {
+      this.markers.forEach(marker => {
+        this.mymap.removeLayer(marker);
+      });
+      this.markers = [];
+      this.make_request(`query=PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+    
+    SELECT ?label ?lat ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE.
+      ?station  rel:COMMUNE ?COMMUNE.
+    }`);
+    },120000); // each 13 second after updating data in the server.
+
     // this.markers.forEach(element => {
     //     element.onclick = ()=>{
     //         mymap.setView([lat, lon], mymap.getZoom());

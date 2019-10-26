@@ -6,7 +6,7 @@ const { namedNode, literal, defaultGraph, quad } = DataFactory;
 const fs = require("fs");
 var slugify = require("slugify");
 module.exports = function get_Lyon_Data(FinalData, dataString) {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject)=>{
         fetch_data(
     "https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171"
   )
@@ -39,13 +39,14 @@ module.exports = function get_Lyon_Data(FinalData, dataString) {
         element.COMMUNE = station_data.commune;
         element.STATUS = station_data.status;
         FinalData.push(element);
-        // console.log(station.properties.commune);
       });
+      
+      console.log(`length after Lyon`, FinalData.length);
+
     })
     .then(() => {
-      const parser = new N3.Parser();
 
-      let writeStream = fs.createWriteStream("./Project_data2.ttl");
+      // let writeStream = fs.createWriteStream("./Project_data2.ttl");
       const writer = new N3.Writer({
         prefixes: {
           ex: "http://example.org/#",
@@ -205,12 +206,12 @@ module.exports = function get_Lyon_Data(FinalData, dataString) {
 
       writer.end((error, result) => {
         dataString += result;
-        writeStream.write(result);
-        writeStream.on("finish", () => {
-          console.log("wrote Lyon's data to file");
-        });
+        // writeStream.write(result);
+        // writeStream.on("finish", () => {
+        //   console.log("wrote Lyon's data to file");
+        // });
         resolve(dataString);
-
+    
         // close the stream
         writeStream.end();
         

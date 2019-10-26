@@ -46,6 +46,7 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
             )
             .then(() => {
               //  console.log(Sainte_ss, Sainte_si);
+              // FinalData = [];
               Sainte_si.forEach(el => {
                 // element to store to the final table
                 var elementToStore = Sainte_ss.find(item => {
@@ -59,16 +60,20 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
                 elementToStore.COMMUNE = "Saint-Etienne";
                 Sainte_Data.push(elementToStore); // push data to saintne db
                 FinalData.push(elementToStore); // push data to the global db
+
               });
+
                 //  console.log('Sainte_si ',Sainte_si.length);
+                console.log(`length after Sainte`, FinalData.length);
+
+
             })
             .then(() => {
-              const parser = new N3.Parser();
               // let rl = readline.createInterface({
               //     input: fs.createReadStream('stops.csv','utf-8')
               // });
               // var line_no = 0;
-              let writeStream = fs.createWriteStream("./Project_data2.ttl");
+              // let writeStream = fs.createWriteStream("./Project_data2.ttl");
               const writer = new N3.Writer({
                 prefixes: {
                   ex: "http://example.org/#",
@@ -227,20 +232,21 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
                   )
                 );
               });
-        
+
               writer.end((error, result) => {
                 dataString += result;        
-                writeStream.write(result);
-                writeStream.on("finish", () => {
-                  console.log("wrote Saint-etienne's data to file");
-                });
+                // writeStream.write(result);
+                // writeStream.on("finish", () => {
+                //   console.log("wrote Saint-etienne's data to file");
+                // });
                 resolve(dataString);
-
+                
                 // close the stream
                 writeStream.end();
                 // console.log(result);
               });
-            })
+            })      
+
             .catch(err => console.log(err));
             
     })

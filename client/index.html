@@ -45,7 +45,7 @@
             <div class="columns is-mobile">
               <div class="column is-11">
                 <section>
-                  <b-button
+                  <!-- <b-button
                     class="is-primary"
                     @click="make_request(`query=PREFIX ex: <http://example.org/#>
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -69,7 +69,7 @@
                       ?station  rel:COMMUNE ?COMMUNE.
                     }`)"
                     >fetch</b-button
-                  >
+                  > -->
                   <!-- <div>
                     <ul v-for="item in list">
                       <li>{{ item.ADDRESS.value }}</li>
@@ -100,7 +100,35 @@
     button{
         margin-bottom: 5px;
     }
+    .pin1 {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-left: -115px;
+  
+  border-radius: 50% 50% 50% 0;
+  border: 4px solid #fff;
+  width: 20px;
+  height: 20px;
+  transform: rotate(-45deg);
+}
+
+.pin1::after {
+  position: absolute;
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-left: -5px;
+  margin-top: -5px;
+  background-color: #fff;
+}
+
+
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js" integrity="sha256-zG8v+NWiZxmjNi+CvUYnZwKtHzFtdO8cAKUIdB8+U9I=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
   <script src="./index.js"></script>
 </html>
