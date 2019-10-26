@@ -29,27 +29,27 @@ var vm = new Vue({
         let LAST_UPDATE = this.list[result].LAST_UPDATE.value;
         LAST_UPDATE = moment.unix(LAST_UPDATE).format("DD/MM/YYYY à HH:mm:ss"); // YYYY-MM-DDTHH:mm:ss
 
-        if (FREE_BIKES == 0 || FREE_BIKES == 1 || FREE_BIKES == 2 ) {
+        if (FREE_BIKES == 0 || FREE_BIKES == 1 || FREE_BIKES == 2) {
           var myIcon = L.icon({
             iconUrl: `https://www.velivert.fr/sites/default/files/markers/rouge-${FREE_BIKES}.png`,
 
-            iconSize: [40, 30],
-            iconAnchor: [20, 15]
+            iconSize: [40, 34],
+            iconAnchor: [20, 17]
           });
         } else {
           // create new icons with photoshop
           if (FREE_BIKES <= 30) {
             var myIcon = L.icon({
               iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-${FREE_BIKES}.png`,
-              iconSize: [40, 30],
-              iconAnchor: [20, 15]
+              iconSize: [40, 34],
+              iconAnchor: [20, 17]
             });
-          }else{
+          } else {
             var myIcon = L.icon({
               iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-30plus.png`,
-              iconSize: [40, 30],
-              iconAnchor: [20, 15]
-            }); 
+              iconSize: [40, 34],
+              iconAnchor: [20, 17]
+            });
           }
         }
 
@@ -60,7 +60,7 @@ var vm = new Vue({
 
         marker.bindPopup(
           `<b>Adresse: </b>${ADDRESS} <br> 
-          <b>velos disponibles:</b> ${FREE_BIKES}<br>
+          <img width = '20px' height = '10px' src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_velo_circle_green.png'/> ${FREE_BIKES}<br>
            <b>Nom:</b> ${label}<br>
            <b>At time:</b> ${LAST_UPDATE}`
         );
@@ -132,7 +132,7 @@ var vm = new Vue({
       ?station  rel:ZIP_CODE ?ZIP_CODE.
       ?station  rel:COMMUNE ?COMMUNE.
     }`);
-    },120000); // each 13 second after updating data in the server.
+    }, 120000); // each 13 second after updating data in the server.
 
     // this.markers.forEach(element => {
     //     element.onclick = ()=>{

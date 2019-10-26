@@ -6,7 +6,7 @@ const fs = require("fs");
 var slugify = require("slugify");
 
 module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Data, FinalData, dataString) {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject)=>{
         fetch_data(
             "https://saint-etienne-gbfs.klervi.net/gbfs/en/station_status.json"
           )
@@ -47,7 +47,7 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
             .then(() => {
               //  console.log(Sainte_ss, Sainte_si);
               // FinalData = [];
-              Sainte_si.forEach(el => {
+              Sainte_si.forEach(el => { // fucking bug
                 // element to store to the final table
                 var elementToStore = Sainte_ss.find(item => {
                   return el.station_id == item.station_id;
@@ -84,7 +84,8 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
                   rel: "http://relations.example.com/"
                 }
               });
-        
+              console.log(`writing to sainte`,FinalData.length);
+              
               FinalData.forEach(station => {
                 var ID = slugify(station.ID, { remove: /[*+~.'()"/!:]/g });
                 var NAME = slugify(station.NAME, { remove: /[*+~./'"!:]/g });
@@ -240,7 +241,6 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
                 //   console.log("wrote Saint-etienne's data to file");
                 // });
                 resolve(dataString);
-                
                 // close the stream
                 writeStream.end();
                 // console.log(result);

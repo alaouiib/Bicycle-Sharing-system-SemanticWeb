@@ -45,39 +45,7 @@
             <div class="columns is-mobile">
               <div class="column is-11">
                 <section>
-                  <!-- <b-button
-                    class="is-primary"
-                    @click="make_request(`query=PREFIX ex: <http://example.org/#>
-                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-                    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                    PREFIX rel: <http://relations.example.com/>
-                    
-                    SELECT ?label ?lat ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
-                    WHERE {
-                      ?station  rdfs:label ?label.
-                      ?station  geo:lat ?lat.
-                      ?station  geo:lon ?lon.
-                      ?station  rel:ADDRESS ?ADDRESS.
-                      ?station  rel:FREE_BIKES ?FREE_BIKES.
-                      ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
-                      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
-                      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
-                      ?station  rel:CB_PAYMENT ?CB_PAYMENT.
-                      ?station  rel:ZIP_CODE ?ZIP_CODE.
-                      ?station  rel:COMMUNE ?COMMUNE.
-                    }`)"
-                    >fetch</b-button
-                  > -->
-                  <!-- <div>
-                    <ul v-for="item in list">
-                      <li>{{ item.ADDRESS.value }}</li>
-                      <li>{{ item.lat.value }}</li>
-                      <li>{{ item.lon.value }}</li>
-                      <li>{{ item.COMMUNE.value }}</li>
-                    </ul>
-                  </div> -->
+                
                   <div id="mapid"></div>
 
                 </section>
@@ -96,35 +64,13 @@
     }
     #mapid {
       height: 400px;
-    }
-    button{
-        margin-bottom: 5px;
-    }
-    .pin1 {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  margin-left: -115px;
-  
-  border-radius: 50% 50% 50% 0;
-  border: 4px solid #fff;
-  width: 20px;
-  height: 20px;
-  transform: rotate(-45deg);
-}
+      margin-left: 30%;
+      margin-right: 10%;
 
-.pin1::after {
-  position: absolute;
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  margin-left: -5px;
-  margin-top: -5px;
-  background-color: #fff;
-}
+    }
+    /* button{
+        margin-bottom: 5px;
+    } */
 
 
   </style>
