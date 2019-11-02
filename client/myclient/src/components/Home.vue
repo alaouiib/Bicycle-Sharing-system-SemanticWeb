@@ -1,10 +1,10 @@
 <template>
   <div class="hello">
     <div class="container is-widescreen">
-      <div class="notification">
+      <div class="notification" >
         <div class="columns is-mobile">
           <div class="column">
-            <b-field label="Select City:">
+            <b-field label="Selectionner Ville:">
               <b-select
                 @input="selected"
                 v-model="selectedCity"
@@ -72,7 +72,7 @@ export default {
 
         let FREE_BIKES = this.list[result].FREE_BIKES.value;
         let EMPTY_SLOTS = this.list[result].EMPTY_SLOTS.value;
-       
+
         let label = this.list[result].label.value;
         let LAST_UPDATE = this.list[result].LAST_UPDATE.value;
         LAST_UPDATE = moment.unix(LAST_UPDATE).format("DD/MM/YYYY à HH:mm:ss"); // YYYY-MM-DDTHH:mm:ss
@@ -107,14 +107,55 @@ export default {
         this.mymap.getPane("labels").style.zIndex = 650;
 
         marker.bindPopup(
-          `<b>Adresse: </b>${ADDRESS} <br> 
-          <img title="free bike" style = "margin-left: 15px; display:inline; margin-bottom:-5px;" width = '20px' height = '10px' src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_velo_circle_green.png'/> <p style = "display:inline;">${FREE_BIKES}</p>
-          <img title="parking slot" style = "margin-left: 63px; display:inline; margin-bottom:-5px;" width = '20px' height = '10px' src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_parking_circle_grey.png'/> <p style = "display:inline;">${EMPTY_SLOTS}</p><br>
-
-           <b>Nom:</b> ${label}<br>
-           <b>At time:</b> ${LAST_UPDATE}<br>
-           <a style="padding-left: 50px;
-          text-decoration: none ;color:grey; text-align:right;" href="/station/${ZIP_CODE}/${ID}"><b >More Info..</b></a>`
+          `
+          <div class='body'><p class='popuptitle'>${label}</p>
+          <b>Adresse: </b>${ADDRESS} <br> 
+          <img title="free bike" class="freebikes"  src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_velo_circle_green.png'/> <p style = "font-size:13px; display:inline-block;">${FREE_BIKES}</p>
+          <img title="parking slot" class="parkingslot" src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_parking_circle_grey.png'/> <p style = "font-size:13px; display:inline-block;">${EMPTY_SLOTS}</p><br>
+           <b>Le:</b> ${LAST_UPDATE}<br>
+           <a class ="more"  href="/station/${ZIP_CODE}/${ID}"> More Info > </a>
+           </div>
+          <style>
+          img.freebikes{
+          margin-left:10%; 
+          display:inline;
+          margin-bottom:-5px;
+          width: 20px;
+          height : 20px;
+          }
+          img.parkingslot{
+          margin-left:33%; 
+          display:inline;
+          margin-bottom:-5px;
+          width: 20px;
+          height : 20px;
+          }
+          div.body{
+            font-family: Ubuntu;
+          }
+          p.popuptitle{
+            text-align:center;
+            border:dashed 0.4px;
+            border-radius: 10px;
+            font-weight: bold;
+            display:relative;
+            font-style: italic;
+            font-variant: small-caps;
+          }
+          a.more {
+            display:block;
+            border-radius: 5px;
+            color:green;
+            text-align:center; 
+            text-decoration: none!important;
+            width:45%;
+            margin:0 auto;
+          }
+          a.more:hover {
+            color: black!important;
+            background:#D3D3D3;
+          }
+          </style>`
         );
         this.markers.push(marker);
       }
@@ -126,38 +167,20 @@ export default {
       });
 
       if (Name == "Lyon") {
-        // this.mymap.setView([45.75, 4.85], this.mymap.getZoom(), {
-        //   animate: true,
-        //   pan: {
-        //     duration: 2
-        //   }
-        // });
-        // setTimeout(() => {
-        //   if (this.mymap.getZoom() <= 7 || this.mymap.getZoom() > 10) {
-        //     this.mymap.setZoom(10);
-        //     console.log(this.mymap.getZoom());
-        //   }
-        // }, 2100);
-        this.mymap.flyTo([45.75, 4.85], 10, {
-          animate: true,
-          duration: 1
-        });
-        this.make_request(
+       
+      
+         this.make_request(
           `query=PREFIX+ex%3A+%3Chttp%3A%2F%2Fexample.org%2F%23%3E%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0APREFIX+rel%3A+%3Chttp%3A%2F%2Frelations.example.com%2F%3E%0A%0A++++SELECT+%3Fstation+%3Flabel+%3Flat+%3Flon+%3FADDRESS+%3FFREE_BIKES+%3FEMPTY_SLOTS+%3FTOTAL_SLOTS+%3FLAST_UPDATE+%3FLAST_UPDATE+%3FCB_PAYMENT+%3FZIP_CODE+%3FCOMMUNE%0A++++WHERE+%7B%0A++%09+++%3Fstation+a+%3Fid.+%0A++++++%3Fstation++rdfs%3Alabel+%3Flabel.%0A++++++%3Fstation++geo%3Alat+%3Flat.%0A++++++%3Fstation++geo%3Alon+%3Flon.%0A++++++%3Fstation++rel%3AADDRESS+%3FADDRESS.%0A++++++%3Fstation++rel%3AFREE_BIKES+%3FFREE_BIKES.%0A++++++%3Fstation++rel%3AEMPTY_SLOTS+%3FEMPTY_SLOTS.%0A++++++%3Fstation++rel%3ATOTAL_SLOTS+%3FTOTAL_SLOTS.%0A++++++%3Fstation++rel%3ALAST_UPDATE+%3FLAST_UPDATE.%0A++++++%3Fstation++rel%3ACB_PAYMENT+%3FCB_PAYMENT.%0A++++++%3Fstation++rel%3AZIP_CODE+%3FZIP_CODE.%0A++++++%3Fstation++rel%3ACOMMUNE+%3FCOMMUNE.%0A++++FILTER+(regex(str(%3FZIP_CODE)%2C+%22%5E69%22))%0A++%7D%0A`
         );
+         setTimeout(() => {
+        this.mymap.flyTo([45.75, 4.85], 10, {
+          animate: true,
+          duration: 2
+        });   
+        }, 2000);
+       
       } else if (Name == "Saint-Etienne") {
-        // this.mymap.setView([45.439695, 4.3871779], this.mymap.getZoom(), {
-        //   animate: true,
-        //   pan: {
-        //     duration: 2
-        //   }
-        // });
-        // setTimeout(() => {
-        //   if (this.mymap.getZoom() <= 7 || this.mymap.getZoom() > 10) {
-        //     this.mymap.setZoom(10);
-        //     console.log(this.mymap.getZoom());
-        //   }
-        // }, 2100);
+       
         this.mymap.flyTo([45.439695, 4.3871779], 10, {
           animate: true,
           duration: 1
@@ -252,5 +275,10 @@ li {
   height: 400px;
   /* margin-left: 30%; */
   margin-right: 10%;
+  border-radius: 6px;
+  border:dotted white 2px;
+}
+.notification{
+  /* margin-top:6% */
 }
 </style>

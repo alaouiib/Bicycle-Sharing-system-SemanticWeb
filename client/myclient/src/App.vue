@@ -1,8 +1,9 @@
 <template>
-  <div id="app">
-    <div id="nav">
+  <div id="app" style="
+    padding-top: 5%" >
+    <!-- <div id="nav">
       <router-link to="/">Return to Map</router-link>
-    </div>
+    </div> -->
     <router-view />
   </div>
 </template>
