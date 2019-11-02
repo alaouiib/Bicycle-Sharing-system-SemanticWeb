@@ -175,9 +175,9 @@ export default {
          setTimeout(() => {
         this.mymap.flyTo([45.75, 4.85], 10, {
           animate: true,
-          duration: 2
+          duration: 1
         });   
-        }, 2000);
+        }, 1000);
        
       } else if (Name == "Saint-Etienne") {
        
@@ -278,7 +278,5 @@ li {
   border-radius: 6px;
   border:dotted white 2px;
 }
-.notification{
-  /* margin-top:6% */
-}
+
 </style>
