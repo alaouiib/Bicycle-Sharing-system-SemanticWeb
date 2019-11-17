@@ -1,49 +1,58 @@
 const fetch_data = require("./fetch_data");
 const N3 = require("n3");
 const { DataFactory } = N3;
-const fetch = require("node-fetch");
-
 const moment = require("moment");
 const { namedNode, literal, defaultGraph, quad } = DataFactory;
 const fs = require("fs");
 var slugify = require("slugify");
-module.exports = function get_Lyon_Data(FinalData, d) {
+const fetch = require("node-fetch");
+
+// { number: 10122,
+//     contract_name: 'lyon',
+//     name: '10122 - VERDUN / DESGRAND',
+//     address: '17 RUE DE VERDUN (VILLEURBANNE)',
+//     position: { lat: 45.784023, lng: 4.897102 },
+//     banking: false,
+//     bonus: false,
+//     bike_stands: 21,
+//     available_bike_stands: 9,
+//     available_bikes: 12,
+//     status: 'OPEN',
+//     last_update: 1573419853000 }
+
+module.exports = function get_newCity_Data(FinalData, d, cityName) {
   return new Promise((resolve, reject) => {
     fetch_data(
-      "https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171"
+      `https://api.jcdecaux.com/vls/v1/stations?contract=${cityName}&apiKey=e8c594113022ec7ce0aedc4eba8fa4137a78f38b`
     )
       .then(response => {
-        let stations = response.features;
+        let stations = response;
+
         stations.forEach(station => {
-          let station_data = station.properties;
           let element = {}; // station object
-          element.station_id = station_data.gid;
-          element.FREE_BIKES = Number.parseInt(station_data.available_bikes);
-          element.EMPTY_SLOTS = Number.parseInt(
-            station_data.available_bike_stands
-          );
+          // element.station_id = station_data.gid;
+          element.FREE_BIKES = Number.parseInt(station.available_bikes);
+          element.EMPTY_SLOTS = Number.parseInt(station.available_bike_stands);
           element.TOTAL_SLOTS = element.FREE_BIKES + element.EMPTY_SLOTS;
 
-          element.LAST_UPDATE = moment(station_data.last_update).unix();
-          element.ZIP_CODE = Number.parseInt(station_data.code_insee);
-          if (station_data.banking == true) {
+          element.LAST_UPDATE = station.last_update;
+          element.ZIP_CODE = Number.parseInt(station.number);
+          if (station.banking == true) {
             element.CB_PAYMENT = 1;
           } else {
             element.CB_PAYMENT = 0;
           }
-          element.NAME = station_data.name;
-          element.LATITUDE = station_data.lat;
-          element.LONGITUDE = station_data.lng;
-          element.ID = `${element.NAME}(${element.ZIP_CODE})`; // tu be slugifyed after
-          if (station_data.address2) {
-            element.ADDRESS = `${station_data.address} (${station_data.address2})`;
-          } else element.ADDRESS = `${station_data.address}`;
-          element.COMMUNE = station_data.commune;
-          element.STATUS = station_data.status;
+          element.NAME = station.name;
+          element.LATITUDE = station.position.lat;
+          element.LONGITUDE = station.position.lng;
+          element.ID = `${element.NAME}(${element.ZIP_CODE})`; // to be slugifyed after
+          element.ADDRESS = `${station.address}`;
+          element.COMMUNE = station.contract_name;
+          element.STATUS = station.status;
           FinalData.push(element);
         });
 
-        // console.log(`length after Lyon`, FinalData.length);
+        console.log(`length after ${cityName}`, FinalData.length);
       })
       .then(() => {
         // let writeStream = fs.createWriteStream("./Project_data2.ttl");
@@ -59,7 +68,7 @@ module.exports = function get_Lyon_Data(FinalData, d) {
         });
 
         FinalData.forEach(station => {
-          var ID = slugify(station.ID, { remove: /[*+~./'()"!:]/g });
+          var ID = slugify(station.ID, { remove: /[*+~./#'()"!:]/g });
           var NAME = slugify(station.NAME, { remove: /[*+~./'"!:]/g });
           var LATITUDE = station.LATITUDE;
           var LONGITUDE = station.LONGITUDE;
@@ -169,7 +178,7 @@ module.exports = function get_Lyon_Data(FinalData, d) {
               namedNode(`http://example.org/#${ID}`),
               namedNode("http://relations.example.com/LAST_UPDATE"),
               literal(
-                LAST_UPDATE,
+                Math.floor(LAST_UPDATE/1000),
                 namedNode("http://www.w3.org/2001/XMLSchema#integer")
               )
             )
@@ -205,7 +214,11 @@ module.exports = function get_Lyon_Data(FinalData, d) {
         });
 
         writer.end((error, result) => {
-          // update the file
+          // d += result;
+          // writeStream.write(result);
+          // writeStream.on("finish", () => {
+          //   console.log("wrote Lyon's data to file");
+          // });
           fetch("http://localhost:3030/TestTripleStore/data?graph=default", {
             credentials: "omit",
             method: "PUT",
@@ -227,19 +240,10 @@ module.exports = function get_Lyon_Data(FinalData, d) {
               // dataString = DataString;
               // console.log(dataString.length);
               // console.log(dataString);
-              console.log('done Lyon');
-
               resolve(d);
-
               console.log("Done updating the triplestore !", s);
             })
             .catch(err => console.error(err));
-
-          // d += result;
-          // writeStream.write(result);
-          // writeStream.on("finish", () => {
-          //   console.log("wrote Lyon's data to file");
-          // });
 
           // close the stream
           writeStream.end();

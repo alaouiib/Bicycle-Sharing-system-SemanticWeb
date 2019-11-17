@@ -1,5 +1,7 @@
 const fetch_data = require("./fetch_data");
 const N3 = require("n3");
+const fetch = require("node-fetch");
+
 const { DataFactory } = N3;
 const { namedNode, literal, defaultGraph, quad } = DataFactory;
 const fs = require("fs");
@@ -64,7 +66,7 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
               });
 
                 //  console.log('Sainte_si ',Sainte_si.length);
-                console.log(`length after Sainte`, FinalData.length);
+                // console.log(`length after Sainte`, FinalData.length);
 
 
             })
@@ -235,12 +237,36 @@ module.exports = function get_Saintetienne_Data(Sainte_si, Sainte_ss, Sainte_Dat
               });
 
               writer.end((error, result) => {
-                dataString += result;        
+                // dataString += result;        
                 // writeStream.write(result);
                 // writeStream.on("finish", () => {
                 //   console.log("wrote Saint-etienne's data to file");
                 // });
-                resolve(dataString);
+                
+                fetch("http://localhost:3030/TestTripleStore/data?graph=default", {
+                  credentials: "omit",
+                  method: "PUT",
+                  headers: {
+                    accept: "application/json, text/javascript, */*; q=0.01",
+                    "accept-language":
+                      "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,ar-MA;q=0.6,ar;q=0.5",
+                    "content-type": "text/turtle; charset=UTF-8",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-origin",
+                    "x-requested-with": "XMLHttpRequest"
+                  },
+                  referrer: "http://localhost:3030/dataset.html",
+                  referrerPolicy: "no-referrer-when-downgrade",
+                  body: result
+                })
+                  .then(res => res.json())
+                  .then(s => {
+                    console.log('done sainte');
+                    
+                    resolve(dataString);
+                    console.log("Done updating the triplestore !", s);
+                  })
+                  .catch(err => console.error(err));
                 // close the stream
                 writeStream.end();
                 // console.log(result);

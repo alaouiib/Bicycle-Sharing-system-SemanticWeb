@@ -20,7 +20,7 @@ const routes = [
     // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
    // dynamic segments start with a colon
-   { path: '/station/:ZIP_CODE/:id', component: stationComponent }
+   { path: '/station/:id', component: stationComponent }
 ]
 
 const router = new VueRouter({

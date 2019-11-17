@@ -1,26 +1,65 @@
 <template>
-  <div class="hello">
-    <div class="container is-widescreen">
-      <div class="notification" >
-        <div class="columns is-mobile">
-          <div class="column">
-            <b-field label="Selectionner Ville:">
-              <b-select
-                @input="selected"
+  <div class="body">
+    <div class="wrapper">
+      <div class="flex-container">
+        <div class="cities">
+          <div
+            v-for="(city, index) in cities"
+            @click="selected(city)"
+            class="box"
+            :key="index"
+          >
+            <a @click="deleteItem(index)" class="delete is-small"></a>
+
+            <img :src="boxImages[index]" alt="" />
+            <p>{{ city.toUpperCase() }}</p>
+          </div>
+          <div
+            class="addCity"
+            @click="
+              isActive = !isActive;
+              isInputDisabled = true;
+            "
+          >
+            <span class="icon addButton is-large">
+              <i class="fas fa-plus-circle"></i>
+            </span>
+          </div>
+          <b-message
+            type="is-success"
+            title="Ajouter ville:"
+            :active.sync="isActive"
+            aria-close-label="Close message"
+            @close ="isInputDisabled = !isInputDisabled"
+          >
+            <form @submit.prevent="addCity(selectedCity)">
+              <input
+                style="width:200px;"
+                class="input is-focused"
+                type="text"
                 v-model="selectedCity"
-                placeholder="Select a character"
-                rounded
-              >
-                <option value="Lyon">Lyon</option>
-                <option value="Saint-Etienne">Saint-Etienne</option>
-              </b-select>
-            </b-field>
+                placeholder="Ajouter ville:"
+              />
+              <button style="margin-left:5px;" class="button">
+                <span class="icon is-small">
+                  <i class="fas fa-plus"></i>
+                </span>
+              </button>
+            </form>
+          </b-message>
+        </div>
+        <div class="map">
+          <div class="searchInput" v-if ="!isInputDisabled">
+            <input
+              @keyup="searchStation"
+              class="input is-rounded"
+              type="text"
+              placeholder="Trouver station par Nom"
+              v-model="stationTemp"
+              :disabled="isInputDisabled"
+            />
           </div>
-          <div class="column is-10">
-            <section>
-              <div id="mapid"></div>
-            </section>
-          </div>
+          <div id="mapid" class="one"></div>
         </div>
       </div>
     </div>
@@ -34,9 +73,7 @@ import moment from "moment";
 
 export default {
   name: "Home",
-  props: {
-    // msg: String
-  },
+
   data() {
     return {
       a: "working",
@@ -44,11 +81,194 @@ export default {
       features: [],
       mymap: null,
       markers: [],
-      selectedCity: ""
+      selectedCity: "",
+      cities: ["saint-etienne", "lyon"],
+      isActive: false,
+      boxImages: [
+        "https://citymapper.com/static/data/resources/switch-region-dude-chulapo@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-ahbeng@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-ayrton@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-aztec@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-barcelonagirl@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-birmingham@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-vasco@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-vespa@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-windywendy@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-yankees@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-dragonboat@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-ayrton@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-aztec@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-carabinier@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-rifthack@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-seattle@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-stockholm@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-timmy@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-top-hat@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-vancouver@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-vasco@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-vespa@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-windywendy@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-yankees@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-dragonboat@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-ayrton@2x.png",
+        "https://citymapper.com/static/data/resources/switch-region-dude-aztec@2x.png"
+      ],
+      hover: true,
+      possibleCities: [
+        "Amiens",
+        "Besançon",
+        "Brisbane",
+        "Cergy-Pontoise",
+        "creteil",
+        "Cordoue",
+        "Dublin",
+        "Gijon",
+        "Goteborg",
+        "Kazan",
+        "Lillestrøm",
+        "Ljubljana",
+        "Luxembourg",
+        "Lyon",
+        "Marseille",
+        "Mulhouse",
+        "Namur",
+        "Nancy",
+        "Nantes",
+        "Rouen",
+        "Santander",
+        "Seville",
+        "Toulouse",
+        "Toyama",
+        "Valence",
+        "Vienne",
+        "Vilnius"
+      ],
+      stationTemp: "",
+      isInputDisabled: true
+      // boxImageSrc: ''
     };
   },
   methods: {
-    async make_request(query) {
+    async searchStation(e) {
+      // console.log(e.key);
+      console.log(this.stationTemp);
+      let stationFound = this.list.filter(station => {
+        // console.log(station.label.value);
+        return (
+          station.ADDRESS.value
+            .toLowerCase()
+            .includes(this.stationTemp.toLowerCase()) ||
+          station.station.value
+            .toLowerCase()
+            .includes(this.stationTemp.toLowerCase())
+        );
+      });
+      // console.log(stationFound[0].ADDRESS.value);
+      if (stationFound.length > 0) {
+        this.markers.forEach(marker => {
+          this.mymap.removeLayer(marker); // this: here refers to the map object
+        });
+        this.markers = [];
+        stationFound.forEach(station => {
+          var myIcon;
+          if (
+            station.FREE_BIKES.value == 0 ||
+            station.FREE_BIKES.value == 1 ||
+            station.FREE_BIKES.value == 2
+          ) {
+            myIcon = L.icon({
+              iconUrl: `https://www.velivert.fr/sites/default/files/markers/rouge-${station.FREE_BIKES.value}.png`,
+              iconSize: [40, 34],
+              iconAnchor: [20, 17]
+            });
+          } else {
+            // create new icons with photoshop
+            if (station.FREE_BIKES.value <= 30) {
+              myIcon = L.icon({
+                iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-${station.FREE_BIKES.value}.png`,
+                iconSize: [40, 34],
+                iconAnchor: [20, 17]
+              });
+            } else {
+              myIcon = L.icon({
+                iconUrl: `https://www.velivert.fr/sites/default/files/markers/vert-30plus.png`,
+                iconSize: [40, 34],
+                iconAnchor: [20, 17]
+              });
+            }
+          }
+          const marker = L.marker([station.lat.value, station.lon.value], {
+            icon: myIcon
+          }).addTo(this.mymap);
+          // this.mymap.createPane("labels");
+          // this.mymap.getPane("labels").style.zIndex = 650;
+          let id = station.station.value.replace("http://example.org/#", "");
+          // console.log('ssssssssssssssssssssss',id);
+
+          let LAST_UPDATE = moment
+            .unix(station.LAST_UPDATE.value)
+            .format("DD/MM/YYYY à HH:mm:ss"); // YYYY-MM-DDTHH:mm:ss
+
+          marker.bindPopup(
+            `
+          <div class='body'><p class='popuptitle'>${id}</p>
+          <b>Adresse: </b>${station.ADDRESS.value} <br>
+          <img title="free bike" class="freebikes"  src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_velo_circle_green.png'/> <p style = "font-size:13px; display:inline-block;">${station.FREE_BIKES.value}</p>
+          <img title="parking slot" class="parkingslot" src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_parking_circle_grey.png'/> <p style = "font-size:13px; display:inline-block;">${station.EMPTY_SLOTS.value}</p><br>
+           <b>Le:</b> ${LAST_UPDATE}<br>
+           <a class ="more"  href="/station/${id}"> More Info > </a>
+           </div>
+          <style>
+          img.freebikes{
+          margin-left:10%;
+          display:inline;
+          margin-bottom:-5px;
+          width: 20px;
+          height : 20px;
+          }
+          img.parkingslot{
+          margin-left:33%;
+          display:inline;
+          margin-bottom:-5px;
+          width: 20px;
+          height : 20px;
+          }
+
+          p.popuptitle{
+            text-align:center;
+            border:dashed 0.4px;
+            border-radius: 10px;
+            font-weight: bold;
+            display:relative;
+            font-style: italic;
+            font-variant: small-caps;
+          }
+          a.more {
+            display:block;
+            border-radius: 5px;
+            color:green;
+            text-align:center;
+            text-decoration: none!important;
+            width:45%;
+            margin:0 auto;
+          }
+          a.more:hover {
+            color: black!important;
+            background:#f4f4f4;
+          }
+          </style>`
+          );
+          this.markers.push(marker);
+        });
+      } else {
+        console.log("station pas existante !");
+      }
+    },
+    async deleteItem(index) {
+      this.cities.splice(index, 1);
+      localStorage.setItem("cities", JSON.stringify(this.cities));
+    },
+    async make_request(query, zoom) {
       const res = await this.$axios.post(
         "http://localhost:3030/TestTripleStore/sparql",
         query
@@ -67,20 +287,31 @@ export default {
         );
         let lat = this.list[result].lat.value;
         let lon = this.list[result].lon.value;
+        this.mymap.flyTo(
+          [
+            this.list[Math.floor(this.list.length / 2)].lat.value,
+            this.list[Math.floor(this.list.length / 2)].lon.value
+          ],
+          zoom,
+          {
+            animate: true,
+            duration: 1
+          }
+        );
         let ADDRESS = this.list[result].ADDRESS.value;
         let ZIP_CODE = this.list[result].ZIP_CODE.value;
-
         let FREE_BIKES = this.list[result].FREE_BIKES.value;
         let EMPTY_SLOTS = this.list[result].EMPTY_SLOTS.value;
 
-        let label = this.list[result].label.value;
+        let label = this.list[result].label.value
+          .replace(/#/gi, "")
+          .replace("-", "");
         let LAST_UPDATE = this.list[result].LAST_UPDATE.value;
         LAST_UPDATE = moment.unix(LAST_UPDATE).format("DD/MM/YYYY à HH:mm:ss"); // YYYY-MM-DDTHH:mm:ss
         var myIcon;
         if (FREE_BIKES == 0 || FREE_BIKES == 1 || FREE_BIKES == 2) {
           myIcon = L.icon({
             iconUrl: `https://www.velivert.fr/sites/default/files/markers/rouge-${FREE_BIKES}.png`,
-
             iconSize: [40, 34],
             iconAnchor: [20, 17]
           });
@@ -109,30 +340,28 @@ export default {
         marker.bindPopup(
           `
           <div class='body'><p class='popuptitle'>${label}</p>
-          <b>Adresse: </b>${ADDRESS} <br> 
+          <b>Adresse: </b>${ADDRESS} <br>
           <img title="free bike" class="freebikes"  src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_velo_circle_green.png'/> <p style = "font-size:13px; display:inline-block;">${FREE_BIKES}</p>
           <img title="parking slot" class="parkingslot" src='https://www.velivert.fr/sites/all/themes/smoove_bootstrap/images/icon_parking_circle_grey.png'/> <p style = "font-size:13px; display:inline-block;">${EMPTY_SLOTS}</p><br>
            <b>Le:</b> ${LAST_UPDATE}<br>
-           <a class ="more"  href="/station/${ZIP_CODE}/${ID}"> More Info > </a>
+           <a class ="more"  href="/station/${ID}"> More Info > </a>
            </div>
           <style>
           img.freebikes{
-          margin-left:10%; 
+          margin-left:10%;
           display:inline;
           margin-bottom:-5px;
           width: 20px;
           height : 20px;
           }
           img.parkingslot{
-          margin-left:33%; 
+          margin-left:33%;
           display:inline;
           margin-bottom:-5px;
           width: 20px;
           height : 20px;
           }
-          div.body{
-            font-family: Ubuntu;
-          }
+
           p.popuptitle{
             text-align:center;
             border:dashed 0.4px;
@@ -146,48 +375,244 @@ export default {
             display:block;
             border-radius: 5px;
             color:green;
-            text-align:center; 
+            text-align:center;
             text-decoration: none!important;
             width:45%;
             margin:0 auto;
           }
           a.more:hover {
             color: black!important;
-            background:#D3D3D3;
+            background:#f4f4f4;
           }
           </style>`
         );
         this.markers.push(marker);
       }
     },
-    selected(Name) {
-      // this.markers = [];
+    async addCity(cityName) {
+      if (this.cities.indexOf(cityName) == -1) {
+        cityName = cityName.toLowerCase();
+        var cityItem = this.possibleCities.filter(city => {
+          return city.toLowerCase() == cityName;
+        });
+        console.log(this.cities);
+        
+        if (cityItem.length > 0) {
+          this.cities.push(cityName);
+          this.selectedCity = "";
+          // console.log(cityName);
+          this.isActive = !this.isActive;
+          localStorage.setItem("cities", JSON.stringify(this.cities));
+          // fetch data from server
+          var requestData = await this.$axios.get(
+            `http://localhost:3000/createCity?newCity_name=${cityName}`
+          );
+        } else {
+          this.$buefy.snackbar.open(
+            `${cityName.toUpperCase()} n'est pas encore supporté 🥺`
+          );
+        }
+      }else{
+        this.$buefy.snackbar.open(
+            `${cityName.toUpperCase()} Est deja dans la liste des villes !`
+          );
+      }
+    },
+    async selected(Name) {
+      // console.log(Name);
+      this.isInputDisabled = false;
       this.markers.forEach(marker => {
         this.mymap.removeLayer(marker); // this: here refers to the map object
       });
+      this.markers = [];
 
-      if (Name == "Lyon") {
-       
-      
-         this.make_request(
-          `query=PREFIX+ex%3A+%3Chttp%3A%2F%2Fexample.org%2F%23%3E%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0APREFIX+rel%3A+%3Chttp%3A%2F%2Frelations.example.com%2F%3E%0A%0A++++SELECT+%3Fstation+%3Flabel+%3Flat+%3Flon+%3FADDRESS+%3FFREE_BIKES+%3FEMPTY_SLOTS+%3FTOTAL_SLOTS+%3FLAST_UPDATE+%3FLAST_UPDATE+%3FCB_PAYMENT+%3FZIP_CODE+%3FCOMMUNE%0A++++WHERE+%7B%0A++%09+++%3Fstation+a+%3Fid.+%0A++++++%3Fstation++rdfs%3Alabel+%3Flabel.%0A++++++%3Fstation++geo%3Alat+%3Flat.%0A++++++%3Fstation++geo%3Alon+%3Flon.%0A++++++%3Fstation++rel%3AADDRESS+%3FADDRESS.%0A++++++%3Fstation++rel%3AFREE_BIKES+%3FFREE_BIKES.%0A++++++%3Fstation++rel%3AEMPTY_SLOTS+%3FEMPTY_SLOTS.%0A++++++%3Fstation++rel%3ATOTAL_SLOTS+%3FTOTAL_SLOTS.%0A++++++%3Fstation++rel%3ALAST_UPDATE+%3FLAST_UPDATE.%0A++++++%3Fstation++rel%3ACB_PAYMENT+%3FCB_PAYMENT.%0A++++++%3Fstation++rel%3AZIP_CODE+%3FZIP_CODE.%0A++++++%3Fstation++rel%3ACOMMUNE+%3FCOMMUNE.%0A++++FILTER+(regex(str(%3FZIP_CODE)%2C+%22%5E69%22))%0A++%7D%0A`
-        );
-         setTimeout(() => {
-        this.mymap.flyTo([45.75, 4.85], 10, {
-          animate: true,
-          duration: 1
-        });   
-        }, 1000);
-       
-      } else if (Name == "Saint-Etienne") {
-       
-        this.mymap.flyTo([45.439695, 4.3871779], 10, {
-          animate: true,
-          duration: 1
+      if (Name == "lyon") {
+        let flag = -1;
+        let requestDone = false;
+        let queryLyon = encodeURIComponent(`PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+
+    SELECT ?station ?label ?lat ?STATUS ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+  	  ?station a geo:SpatialThing.
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:STATUS ?STATUS.
+	   ?station rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE .
+      ?station  rel:COMMUNE ?COMMUNE.
+      FILTER (regex(str(?ZIP_CODE),"^69[0-9]+"))
+      }
+      ORDER BY DESC(?lat)
+      LIMIT 100
+  `);
+
+        this.make_request(`query=${queryLyon}`, 10);
+        this.mymap.on("zoomend", function(e) {
+          // console.log(this.getZoom());
+          let zoom = this.getZoom();
+          if (zoom > 11) {
+            queryLyon = encodeURIComponent(`PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+
+    SELECT ?station ?label ?lat ?STATUS ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+  	  ?station a geo:SpatialThing.
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:STATUS ?STATUS.
+	   ?station rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE .
+      ?station  rel:COMMUNE ?COMMUNE.
+      FILTER (regex(str(?ZIP_CODE),"^69[0-9]+"))
+      }
+      ORDER BY DESC(?lat)
+      `);
+
+            //  this.make_request(`query=${queryLyon}`);
+            flag = 1;
+            requestDone = true;
+            console.log("zoom 13 depasse", flag);
+          }
         });
-        this.make_request(
-          `query=PREFIX+ex%3A+%3Chttp%3A%2F%2Fexample.org%2F%23%3E%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0APREFIX+rel%3A+%3Chttp%3A%2F%2Frelations.example.com%2F%3E%0A%0A++++SELECT+%3Fstation+%3Flabel+%3Flat+%3Flon+%3FADDRESS+%3FFREE_BIKES+%3FEMPTY_SLOTS+%3FTOTAL_SLOTS+%3FLAST_UPDATE+%3FLAST_UPDATE+%3FCB_PAYMENT+%3FZIP_CODE+%3FCOMMUNE%0A++++WHERE+%7B%0A++%09+++%3Fstation+a+%3Fid.+%0A++++++%3Fstation++rdfs%3Alabel+%3Flabel.%0A++++++%3Fstation++geo%3Alat+%3Flat.%0A++++++%3Fstation++geo%3Alon+%3Flon.%0A++++++%3Fstation++rel%3AADDRESS+%3FADDRESS.%0A++++++%3Fstation++rel%3AFREE_BIKES+%3FFREE_BIKES.%0A++++++%3Fstation++rel%3AEMPTY_SLOTS+%3FEMPTY_SLOTS.%0A++++++%3Fstation++rel%3ATOTAL_SLOTS+%3FTOTAL_SLOTS.%0A++++++%3Fstation++rel%3ALAST_UPDATE+%3FLAST_UPDATE.%0A++++++%3Fstation++rel%3ACB_PAYMENT+%3FCB_PAYMENT.%0A++++++%3Fstation++rel%3AZIP_CODE+%3FZIP_CODE.%0A++++++%3Fstation++rel%3ACOMMUNE+%3FCOMMUNE.%0A++++FILTER+(regex(str(%3FZIP_CODE)%2C+%22%5E42%22))%0A++%7D%0A`
-        );
+        if (!requestDone) {
+          var inerval = setInterval(() => {
+            if (flag == 1) {
+              console.log("make request here");
+              this.make_request(`query=${queryLyon}`, this.mymap.getZoom());
+              flag = -1;
+              clearInterval(inerval);
+            }
+          }, 100);
+        } else {
+          console.log("request already done !");
+        }
+
+        // to do: load just 100 stations, map.onZoom load more stations
+      } else if (Name == "saint-etienne") {
+        let querySainte = encodeURIComponent(`PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+
+    SELECT ?station ?label ?lat ?STATUS ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+  	  ?station a geo:SpatialThing.
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:STATUS ?STATUS.
+	   ?station rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE .
+      ?station  rel:COMMUNE ?COMMUNE.
+  FILTER (regex(str(?ZIP_CODE),"^42[0-9]+"))
+  }`);
+        this.make_request(`query=${querySainte}`, 10);
+      } else {
+        let flag = -1;
+        let requestDone = false;
+        let queryNewCity = encodeURIComponent(`PREFIX ex: <http://example.org/#>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+      PREFIX rel: <http://relations.example.com/>
+
+    SELECT ?station ?label ?lat ?STATUS ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+  	  ?station a geo:SpatialThing.
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:STATUS ?STATUS.
+	    ?station   rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE .
+      ?station  rel:COMMUNE ?COMMUNE.
+  FILTER regex(str(?COMMUNE),"${Name}")
+  }
+  LIMIT 150`);
+
+        this.make_request(`query=${queryNewCity}`, 10);
+        this.mymap.on("zoomend", function(e) {
+          // console.log(this.getZoom());
+          let zoom = this.getZoom();
+          if (zoom > 11) {
+            queryNewCity = encodeURIComponent(`PREFIX ex: <http://example.org/#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rel: <http://relations.example.com/>
+
+    SELECT ?station ?label ?lat ?STATUS ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
+    WHERE {
+  	  ?station a geo:SpatialThing.
+      ?station  rdfs:label ?label.
+      ?station  geo:lat ?lat.
+      ?station  geo:lon ?lon.
+      ?station  rel:ADDRESS ?ADDRESS.
+      ?station  rel:FREE_BIKES ?FREE_BIKES.
+      ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+      ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
+      ?station  rel:LAST_UPDATE ?LAST_UPDATE.
+      ?station  rel:STATUS ?STATUS.
+	    ?station  rel:CB_PAYMENT ?CB_PAYMENT.
+      ?station  rel:ZIP_CODE ?ZIP_CODE .
+      ?station  rel:COMMUNE ?COMMUNE.
+      FILTER regex(str(?COMMUNE),"${Name}")
+      }
+      ORDER BY DESC(?lat)
+      `);
+            //  this.make_request(`query=${queryLyon}`);
+            flag = 1;
+            requestDone = true;
+            console.log("zoom 13 depasse", flag);
+          }
+        });
+        if (!requestDone) {
+          var inerval2 = setInterval(() => {
+            if (flag == 1) {
+              console.log("make request here");
+              this.make_request(`query=${queryNewCity}`, this.mymap.getZoom());
+              flag = -1;
+              clearInterval(inerval2);
+            }
+          }, 100);
+        } else {
+          console.log("request already done !");
+        }
       }
     },
     test() {
@@ -195,6 +620,13 @@ export default {
     }
   },
   mounted() {
+    if (JSON.parse(localStorage.getItem("cities")).length > 0) {
+      this.cities = JSON.parse(localStorage.getItem("cities"));
+      // console.log(this.cities);
+    } else {
+      console.log("empty ");
+    }
+
     this.mymap = L.map("mapid");
     this.mymap.setView([48.864716, 2.349014], 7);
 
@@ -204,62 +636,6 @@ export default {
     const tiles = L.tileLayer(tileUrl, { attribution });
     tiles.addTo(this.mymap);
     // load data on exploring the map
-
-    if (this.selectedCity) {
-      // console.log(this.selectedCity);
-    }
-
-    // test
-    // // fin test
-    // this.make_request(`query=PREFIX ex: <http://example.org/#>
-    // PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    // PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    // PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    // PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    // PREFIX rel: <http://relations.example.com/>
-
-    // SELECT ?label ?lat ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
-    // WHERE {
-    //   ?station  rdfs:label ?label.
-    //   ?station  geo:lat ?lat.
-    //   ?station  geo:lon ?lon.
-    //   ?station  rel:ADDRESS ?ADDRESS.
-    //   ?station  rel:FREE_BIKES ?FREE_BIKES.
-    //   ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
-    //   ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
-    //   ?station  rel:LAST_UPDATE ?LAST_UPDATE.
-    //   ?station  rel:CB_PAYMENT ?CB_PAYMENT.
-    //   ?station  rel:ZIP_CODE ?ZIP_CODE.
-    //   ?station  rel:COMMUNE ?COMMUNE.
-    // }`);
-
-    // setInterval(() => {
-    //   this.markers.forEach(marker => {
-    //     this.mymap.removeLayer(marker);
-    //   });
-    //   this.markers = [];
-    //   this.make_request(`query=PREFIX ex: <http://example.org/#>
-    // PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    // PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    // PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    // PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    // PREFIX rel: <http://relations.example.com/>
-
-    // SELECT ?label ?lat ?lon ?ADDRESS ?FREE_BIKES ?EMPTY_SLOTS ?TOTAL_SLOTS ?LAST_UPDATE ?LAST_UPDATE ?CB_PAYMENT ?ZIP_CODE ?COMMUNE
-    // WHERE {
-    //   ?station  rdfs:label ?label.
-    //   ?station  geo:lat ?lat.
-    //   ?station  geo:lon ?lon.
-    //   ?station  rel:ADDRESS ?ADDRESS.
-    //   ?station  rel:FREE_BIKES ?FREE_BIKES.
-    //   ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
-    //   ?station  rel:TOTAL_SLOTS ?TOTAL_SLOTS.
-    //   ?station  rel:LAST_UPDATE ?LAST_UPDATE.
-    //   ?station  rel:CB_PAYMENT ?CB_PAYMENT.
-    //   ?station  rel:ZIP_CODE ?ZIP_CODE.
-    //   ?station  rel:COMMUNE ?COMMUNE.
-    // }`);
-    // }, 120000); // each 13 second after updating data in the server.
   }
 };
 </script>
@@ -271,12 +647,100 @@ li {
   list-style: none; /* pour enlever les puces sur IE7 */
   margin: 10px;
 }
-#mapid {
-  height: 400px;
-  /* margin-left: 30%; */
-  margin-right: 10%;
-  border-radius: 6px;
-  border:dotted white 2px;
+
+.body {
+  background: #f4f4f4;
+}
+.wrapper {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+}
+.flex-container {
+  display: flex;
+  background: white;
+  flex-wrap: wrap;
+  justify-content: space;
+  background: #f4f4f4;
+  margin-left: -30px;
+  padding: 20px;
 }
 
+.cities {
+  display: flex;
+  flex-wrap: wrap;
+  width: 400px;
+  margin-left: -3%;
+  /* max-width: 100%; */
+  justify-content: space-around;
+  /* margin-top: 5px; */
+
+  /* justify-content: start; */
+}
+a.delete {
+  margin-top: -20%;
+  margin-left: 100%;
+}
+div.box {
+  height: 130px;
+  /* background: rgb(178, 231, 218); */
+  flex-basis: 120px;
+  background-repeat: no-repeat;
+  position: relative;
+  background: #c6f5cc;
+  /* text-align: justify; */
+}
+div.box:hover {
+  background-color: rgba(107, 145, 160, 0.26);
+}
+
+div.box img {
+  height: 80px;
+  width: 100%;
+  display: inline-block;
+  margin-top: -38px;
+}
+
+div.box p {
+  color: rgb(92, 65, 65);
+  /* background: red; */
+  width: 90%;
+  font-size: smaller;
+  margin-top: -4px;
+
+  /* margin: 20px auto; */
+}
+
+div.addCity {
+  height: 130px;
+  flex-basis: 110px;
+  border: dashed 2px #66a4e3;
+  border-radius: 6px;
+}
+div.addCity:hover {
+  background: rgba(107, 145, 160, 0.26);
+}
+.addButton {
+  margin: 40px auto;
+}
+.map {
+  display: flex;
+  flex-wrap: wrap;
+
+  /* justify-content: flex-start; */
+}
+#mapid {
+  height: 400px;
+  z-index: 0;
+  border-radius: 6px;
+  border: dotted white 2px;
+  flex: 1 0 650px;
+  margin-left: 30px;
+}
+.searchInput {
+  flex: 1 0 350px;
+  margin-left: 167px;
+  margin-top: -8px;
+  margin-bottom: 2px;
+}
 </style>
