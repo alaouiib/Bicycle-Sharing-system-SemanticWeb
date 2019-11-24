@@ -161,17 +161,17 @@
       <!-- v-if="!newCityPage" -->
       <div class="container">
         <div class="columns">
-          <div class="column" style="margin-top: -6%;">
+          <div class="column" style="margin-top: -3%;max-width: 90%;margin: 0 auto;">
             <b-message
-              v-if="newCityPage"
-              type="is-success"
+              v-if="isActive"
+              type="is-warning"
               title="Ajouter Video:"
               :active.sync="isActive"
               aria-close-label="Close message"
             >
               <form @submit.prevent="addVideo(videoIntegrationCode)">
                 <input
-                  style="width:200px;"
+                  style="width:90%;"
                   class="input is-focused"
                   type="text"
                   v-model="videoIntegrationCode"
@@ -184,7 +184,7 @@
                 </button>
               </form>
             </b-message>
-            <div v-if="!isActive && !newCityPage" class="card">
+            <div v-if="videoIntegrationCode" class="card">
               <p class="description">{{ companyName }} comment ça marche ?</p>
               <div v-html="videoIntegrationCode" class="o-video">
                 <!-- <iframe :src="videoSrc" style="max-height:%;" width="560" frameborder="0"></iframe> -->
@@ -261,6 +261,7 @@ export default {
       this.LAST_UPDATE = data[2];
       var now = moment(new Date()).unix(); //todays date
       var diff = (now - this.LAST_UPDATE) / 60;
+      
       this.LAST_UPDATE = Math.floor(diff);
     }
   },
@@ -319,6 +320,8 @@ export default {
         this.FREE_BIKES = this.stationData[0].FREE_BIKES.value;
         this.EMPTY_SLOTS = this.stationData[0].EMPTY_SLOTS.value;
         this.LAST_UPDATE = this.stationData[0].LAST_UPDATE.value;
+        console.log(this.LAST_UPDATE);
+        
         this.CB_PAYMENT = this.stationData[0].CB_PAYMENT.value;
         this.COMMUNE = this.stationData[0].COMMUNE.value;
         this.lat = this.stationData[0].lat.value;
@@ -344,9 +347,11 @@ export default {
         } else if (this.CB_PAYMENT == 1) {
           this.is_CB_accepted = ` Est Accepté 😃`;
         }
-        var now = moment(new Date()).unix(); //todays date
+        //todays date
+        var now = moment(new Date()).unix(); 
         var diff = (now - this.LAST_UPDATE) / 60;
         this.LAST_UPDATE = Math.floor(diff);
+        
         // lyon
         if (this.ZIP_CODE.match("^69")) {
           this.imgSrc =

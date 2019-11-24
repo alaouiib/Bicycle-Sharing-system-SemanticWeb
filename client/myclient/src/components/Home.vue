@@ -203,7 +203,7 @@ export default {
           // this.mymap.createPane("labels");
           // this.mymap.getPane("labels").style.zIndex = 650;
           let id = station.station.value.replace("http://example.org/#", "");
-          // console.log('ssssssssssssssssssssss',id);
+          // console.log('test id sss',id);
 
           let LAST_UPDATE = moment
             .unix(station.LAST_UPDATE.value)
