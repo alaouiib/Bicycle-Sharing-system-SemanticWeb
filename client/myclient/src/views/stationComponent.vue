@@ -150,7 +150,9 @@
                     property="ns2:CB_PAYMENT"
                     data-type="xsd:integer"
                     :content="CB_PAYMENT"
-                  >{{summary}} with a temperature of {{temperature }}&deg; .</p>
+                  >
+                    {{ summary }} with a temperature of {{ temperature }}&deg; .
+                  </p>
                 </li>
               </ul>
             </div>
@@ -161,21 +163,49 @@
       <!-- v-if="!newCityPage" -->
       <div class="container">
         <div class="columns">
-          <div class="column" style="margin-top: -6%;">
+          <div class="column" style="">
             <b-message
-              v-if="newCityPage"
-              type="is-success"
+              style="margin:50px; margin-top:-17px;"
+              v-if="isActive"
+              type="is-warning"
               title="Ajouter Video:"
               :active.sync="isActive"
               aria-close-label="Close message"
             >
-              <form @submit.prevent="addVideo(videoIntegrationCode)">
+              <form
+                class="myForm"
+                @submit.prevent="addVideo(videoIntegrationCode)"
+              >
+                <svg
+                  style="
+              height: 3em;
+              width: 3em;
+              margin-top: -4px;
+              margin-right: 15px;
+              "
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="css-i6dzq1"
+                >
+                  <path
+                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"
+                  ></path>
+                  <polygon
+                    points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"
+                  ></polygon>
+                </svg>
                 <input
-                  style="width:200px;"
+                  style="width:85%;"
                   class="input is-focused"
                   type="text"
                   v-model="videoIntegrationCode"
-                  placeholder="Ajouter Video:"
+                  placeholder="Ajouter le code d'integration du video sur Youtube:"
                 />
                 <button style="margin-left:5px;" class="button">
                   <span class="icon is-small">
@@ -184,7 +214,7 @@
                 </button>
               </form>
             </b-message>
-            <div v-if="!isActive && !newCityPage" class="card">
+            <div v-if="videoIntegrationCode" class="card">
               <p class="description">{{ companyName }} comment ça marche ?</p>
               <div v-html="videoIntegrationCode" class="o-video">
                 <!-- <iframe :src="videoSrc" style="max-height:%;" width="560" frameborder="0"></iframe> -->
@@ -247,8 +277,8 @@ export default {
           saint_etienne: `<iframe width="817" height="489" src="https://www.youtube.com/embed/7ucBKUVPdWw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
         }
       ],
-      summary:'',
-      temperature:''
+      summary: "",
+      temperature: ""
     };
   },
   sockets: {
@@ -259,8 +289,10 @@ export default {
       this.FREE_BIKES = data[0];
       this.EMPTY_SLOTS = data[1];
       this.LAST_UPDATE = data[2];
+
       var now = moment(new Date()).unix(); //todays date
       var diff = (now - this.LAST_UPDATE) / 60;
+
       this.LAST_UPDATE = Math.floor(diff);
     }
   },
@@ -319,18 +351,22 @@ export default {
         this.FREE_BIKES = this.stationData[0].FREE_BIKES.value;
         this.EMPTY_SLOTS = this.stationData[0].EMPTY_SLOTS.value;
         this.LAST_UPDATE = this.stationData[0].LAST_UPDATE.value;
+        console.log(this.LAST_UPDATE);
+
         this.CB_PAYMENT = this.stationData[0].CB_PAYMENT.value;
         this.COMMUNE = this.stationData[0].COMMUNE.value;
         this.lat = this.stationData[0].lat.value;
         this.lon = this.stationData[0].lon.value;
         this.STATUS = this.stationData[0].STATUS.value;
         this.TOTAL_SLOTS = this.stationData[0].TOTAL_SLOTS.value;
-        var weather_resp = await fetch(`http://localhost:3000/weather/${this.lat},${this.lon}`);
+        var weather_resp = await fetch(
+          `http://localhost:3000/weather/${this.lat},${this.lon}`
+        );
         var weather_data = await weather_resp.json();
         this.summary = weather_data.currently.summary;
-        this.temperature = weather_data.currently.temperature ;
+        this.temperature = weather_data.currently.temperature;
         // From F to Celsius
-        this.temperature = Math.round((this.temperature - 32) * 5/9)
+        this.temperature = Math.round(((this.temperature - 32) * 5) / 9);
         // console.log(weather_data);
 
         if (this.STATUS == "OPEN") {
@@ -344,9 +380,11 @@ export default {
         } else if (this.CB_PAYMENT == 1) {
           this.is_CB_accepted = ` Est Accepté 😃`;
         }
-        var now = moment(new Date()).unix(); //todays date
+        //todays date
+        var now = moment(new Date()).unix();
         var diff = (now - this.LAST_UPDATE) / 60;
         this.LAST_UPDATE = Math.floor(diff);
+
         // lyon
         if (this.ZIP_CODE.match("^69")) {
           this.imgSrc =
@@ -491,7 +529,7 @@ img.bg-img-slotsInfo {
   opacity: 1;
   position: relative;
   height: 50%;
-  width: 80%;
+  width: 70%;
   /* margin: -5px auto; */
   margin-top: -2%;
   margin-bottom: -1%;
@@ -579,7 +617,10 @@ span.last_update {
 
 .postalInfoDiv li {
   /* width: 50%; */
-  text-align: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-align: left; */
   padding: 8px;
 }
 .postalInfoDiv li p {

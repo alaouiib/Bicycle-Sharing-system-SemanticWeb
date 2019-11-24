@@ -15,10 +15,11 @@
             <p>{{ city.toUpperCase() }}</p>
           </div>
           <div
-            class="addCity"
+            :class="{ addCity, isHidden }"
             @click="
               isActive = !isActive;
               isInputDisabled = true;
+              isHidden = true;
             "
           >
             <span class="icon addButton is-large">
@@ -30,7 +31,7 @@
             title="Ajouter ville:"
             :active.sync="isActive"
             aria-close-label="Close message"
-            @close ="isInputDisabled = !isInputDisabled"
+            @close="isInputDisabled = !isInputDisabled"
           >
             <form @submit.prevent="addCity(selectedCity)">
               <input
@@ -49,7 +50,7 @@
           </b-message>
         </div>
         <div class="map">
-          <div class="searchInput" v-if ="!isInputDisabled">
+          <div class="searchInput" v-if="!isInputDisabled">
             <input
               @keyup="searchStation"
               class="input is-rounded"
@@ -144,7 +145,8 @@ export default {
         "Vilnius"
       ],
       stationTemp: "",
-      isInputDisabled: true
+      isInputDisabled: true,
+      isHidden: false
       // boxImageSrc: ''
     };
   },
@@ -203,7 +205,7 @@ export default {
           // this.mymap.createPane("labels");
           // this.mymap.getPane("labels").style.zIndex = 650;
           let id = station.station.value.replace("http://example.org/#", "");
-          // console.log('ssssssssssssssssssssss',id);
+          // console.log('test id sss',id);
 
           let LAST_UPDATE = moment
             .unix(station.LAST_UPDATE.value)
@@ -390,13 +392,16 @@ export default {
       }
     },
     async addCity(cityName) {
+      const loadingComponent = this.$buefy.loading.open();
+
+      this.isHidden = false;
       if (this.cities.indexOf(cityName) == -1) {
         cityName = cityName.toLowerCase();
         var cityItem = this.possibleCities.filter(city => {
           return city.toLowerCase() == cityName;
         });
         console.log(this.cities);
-        
+
         if (cityItem.length > 0) {
           this.cities.push(cityName);
           this.selectedCity = "";
@@ -407,20 +412,33 @@ export default {
           var requestData = await this.$axios.get(
             `http://localhost:3000/createCity?newCity_name=${cityName}`
           );
+          setTimeout(() => {
+            loadingComponent.close();
+            this.$buefy.snackbar.open(
+              `${cityName.toUpperCase()} est ajouté avec success !`
+            );
+          }, 500);
         } else {
-          this.$buefy.snackbar.open(
-            `${cityName.toUpperCase()} n'est pas encore supporté 🥺`
-          );
+          this.isHidden = true;
+          setTimeout(() => {
+            loadingComponent.close();
+            this.$buefy.snackbar.open({
+              message: `${cityName.toUpperCase()} n'est pas encore supporté 🥺`,
+              type: "is-warning",
+              position: "is-top"
+            });
+          }, 500);
         }
-      }else{
+      } else {
         this.$buefy.snackbar.open(
-            `${cityName.toUpperCase()} Est deja dans la liste des villes !`
-          );
+          `${cityName.toUpperCase()} Est deja dans la liste des villes !`
+        );
       }
     },
     async selected(Name) {
       // console.log(Name);
       this.isInputDisabled = false;
+      this.stationTemp = "";
       this.markers.forEach(marker => {
         this.mymap.removeLayer(marker); // this: here refers to the map object
       });
@@ -680,6 +698,9 @@ li {
 a.delete {
   margin-top: -20%;
   margin-left: 100%;
+}
+.isHidden {
+  display: none;
 }
 div.box {
   height: 130px;
