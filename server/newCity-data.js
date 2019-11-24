@@ -36,6 +36,11 @@ module.exports = function get_newCity_Data(FinalData, d, cityName) {
           element.TOTAL_SLOTS = element.FREE_BIKES + element.EMPTY_SLOTS;
 
           element.LAST_UPDATE = station.last_update;
+          // get only 10 first digits of the unix number
+          var str_lastUpd = (element.LAST_UPDATE).toString(); 
+          str_lastUpd = (str_lastUpd.split('').slice(0, 10)).join('');
+          element.LAST_UPDATE = Number.parseInt(str_lastUpd);
+
           element.ZIP_CODE = Number.parseInt(station.number);
           if (station.banking == true) {
             element.CB_PAYMENT = 1;
@@ -178,7 +183,7 @@ module.exports = function get_newCity_Data(FinalData, d, cityName) {
               namedNode(`http://example.org/#${ID}`),
               namedNode("http://relations.example.com/LAST_UPDATE"),
               literal(
-                Math.floor(LAST_UPDATE/1000),
+                LAST_UPDATE,
                 namedNode("http://www.w3.org/2001/XMLSchema#integer")
               )
             )
