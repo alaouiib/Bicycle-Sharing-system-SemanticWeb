@@ -6,16 +6,16 @@
           <div
             v-for="(city, index) in cities"
             @click="selected(city)"
-            class="box"
+            :class="boxClass"
             :key="index"
           >
-            <a @click="deleteItem(index)" class="delete is-small"></a>
-
+            <!-- @click="deleteItem(index)" -->
+            <a @click="deleteItem($event, index)" class="delete is-small"></a>
             <img :src="boxImages[index]" alt="" />
             <p>{{ city.toUpperCase() }}</p>
           </div>
           <div
-            :class="{ addCity, isHidden }"
+            :class="deleteClass"
             @click="
               isActive = !isActive;
               isInputDisabled = true;
@@ -31,7 +31,10 @@
             title="Ajouter ville:"
             :active.sync="isActive"
             aria-close-label="Close message"
-            @close="isInputDisabled = !isInputDisabled"
+            @close="
+              isInputDisabled = !isInputDisabled;
+              isHidden = false;
+            "
           >
             <form @submit.prevent="addCity(selectedCity)">
               <input
@@ -49,7 +52,7 @@
             </form>
           </b-message>
         </div>
-        <div class="map">
+        <div class="map animated fadeInRight">
           <div class="searchInput" v-if="!isInputDisabled">
             <input
               @keyup="searchStation"
@@ -146,7 +149,10 @@ export default {
       ],
       stationTemp: "",
       isInputDisabled: true,
-      isHidden: false
+      isHidden: false,
+      deleteClass: ["addCity", this.isHidden, "animated", "fadeInUp"],
+      boxClass: ["box", "animated", "fadeInUp"]
+
       // boxImageSrc: ''
     };
   },
@@ -266,9 +272,27 @@ export default {
         console.log("station pas existante !");
       }
     },
-    async deleteItem(index) {
-      this.cities.splice(index, 1);
-      localStorage.setItem("cities", JSON.stringify(this.cities));
+    async deleteItem(event, index) {
+      this.$buefy.dialog.confirm({
+        title: "Suppression de ville",
+        message: `Voulez vous vraiment supprimer la ville de ${this.cities[
+          index
+        ].toUpperCase()} ?`,
+        confirmText: ` Supprimer ${this.cities[index].toUpperCase()}`,
+        type: "is-danger",
+        hasIcon: true,
+        onConfirm: () => {
+          this.isInputDisabled = true;
+          event.target.parentElement.classList.remove("fadeInUp");
+          event.target.parentElement.classList.add("zoomOutDown");
+          this.$buefy.toast.open("Ville supprimé !");
+          setTimeout(() => {
+            this.cities.splice(index, 1);
+            localStorage.setItem("cities", JSON.stringify(this.cities));
+          }, 1000);
+          localStorage.setItem("cities", JSON.stringify(this.cities));
+        }
+      });
     },
     async make_request(query, zoom) {
       const res = await this.$axios.post(
@@ -638,7 +662,7 @@ export default {
     }
   },
   mounted() {
-    if (JSON.parse(localStorage.getItem("cities")).length > 0) {
+    if (JSON.parse(localStorage.getItem("cities"))) {
       this.cities = JSON.parse(localStorage.getItem("cities"));
       // console.log(this.cities);
     } else {

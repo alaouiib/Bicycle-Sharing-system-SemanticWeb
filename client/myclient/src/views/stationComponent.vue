@@ -23,7 +23,7 @@
         </b-tooltip>
       </div>
 
-      <div class="container">
+      <div class="container animated fadeInLeft">
         <div class="columns">
           <div class="column" style="margin-bottom: -80px; margin-top: -7%;">
             <div class="card">
@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      <div class="container">
+      <div class="container animated fadeInRight">
         <div class="columns">
           <div class="column">
             <div class="card">
@@ -161,7 +161,7 @@
       </div>
 
       <!-- v-if="!newCityPage" -->
-      <div class="container">
+      <div class="container animated fadeInLeft">
         <div class="columns">
           <div class="column" style="">
             <b-message
@@ -289,8 +289,8 @@ export default {
       this.FREE_BIKES = data[0];
       this.EMPTY_SLOTS = data[1];
       this.LAST_UPDATE = data[2];
-
       var now = moment(new Date()).unix(); //todays date
+
       var diff = (now - this.LAST_UPDATE) / 60;
 
       this.LAST_UPDATE = Math.floor(diff);
@@ -309,11 +309,9 @@ export default {
     }
   },
   mounted() {
-    // each 1 minute, update data
-    setInterval(() => {
-      console.log("sent");
-      this.$socket.emit("updateData", [this.lat, this.lon]);
-    }, 60000);
+    // set the videoscities array as new variable of localstorage
+    localStorage.setItem("videosCities", JSON.stringify(this.videosCities));
+  
     // initialise the videos about each city's bicycle company
     if (JSON.parse(localStorage.getItem("videosCities"))) {
       this.videosCities = JSON.parse(localStorage.getItem("videosCities"));
@@ -471,7 +469,14 @@ export default {
           `Une erreur s'est parvenue, veuillez actualiser la page !🥺`
         );
       });
-
+  // each 1 minute, update data
+    // setTimeout(() => {
+    //   this.$socket.emit("updateData", [this.lat, this.lon,this.COMMUNE]);
+    // }, 1000);
+    setInterval(() => {
+      console.log("sent");
+      this.$socket.emit("updateData", [this.lat, this.lon, this.COMMUNE,this.ZIP_CODE]);
+    }, 120000);
     // let vars = res.data.head.vars; //  features requested
     // let result = res.data.results.bindings; // results
   }
