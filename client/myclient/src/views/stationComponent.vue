@@ -473,10 +473,10 @@ export default {
     // setTimeout(() => {
     //   this.$socket.emit("updateData", [this.lat, this.lon,this.COMMUNE]);
     // }, 1000);
-    setInterval(() => {
-      console.log("sent");
-      this.$socket.emit("updateData", [this.lat, this.lon, this.COMMUNE,this.ZIP_CODE]);
-    }, 120000);
+    // setInterval(() => {
+    //   console.log("sent");
+    //   this.$socket.emit("updateData", [this.lat, this.lon, this.COMMUNE,this.ZIP_CODE]);
+    // }, 120000);
     // let vars = res.data.head.vars; //  features requested
     // let result = res.data.results.bindings; // results
   }

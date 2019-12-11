@@ -15,6 +15,8 @@ let newAddedCities = [];
 const get_Saintetienne_Data = require("./saint-etienne-data");
 const get_Lyon_Data = require("./lyon-data");
 const get_newCity_Data = require("./newCity-data");
+const get_createCity_Data = require("./createCity-data");
+
 /** =========== Main() ============*/
 // first : get data of Saint-Etienne and Lyon
 get_data(dataString, FinalData).catch(err => console.error(err));
@@ -67,6 +69,23 @@ app.get("/createCity", async (req, res) => {
     message: `the ${newCity_name}  city has been added successfully ! `
   });
 });
+app.use(express.json());
+app.post("/createNewCity", async (req, res) => {
+  let fileKeys = req.body.fileKeys;
+  let url = req.body.url;
+  let cityName = req.body.cityName;
+  console.log(fileKeys, url);
+  var d_createCity = await get_createCity_Data(
+    FinalData,
+    dataString,
+    url,
+    fileKeys,
+    cityName
+  );
+  res.json({
+    message: `success message ! columns names received !! `
+  });
+});
 app.get("/weather/:latlon", async (req, res) => {
   console.log(req.params.latlon);
   var latlon = req.params.latlon;
@@ -91,20 +110,14 @@ io.sockets.on("connection", function(socket) {
     var commune = data[2];
     var zip_code = data[3];
     if (zip_code) {
-      if (zip_code.match('^42')) {
-        // var x  = FinalData.filter(station => 
+      if (zip_code.match("^42")) {
+        // var x  = FinalData.filter(station =>
         //   station.ZIP_CODE.contains(zip_code)
         // );
-        
-        var d = await get_Saintetienne_Data(
-          [],
-          [],
-          [],
-          FinalData,
-          dataString
-        );
+
+        var d = await get_Saintetienne_Data([], [], [], FinalData, dataString);
         console.log("updated sainte RT");
-      } else if (zip_code.match('^69')) {
+      } else if (zip_code.match("^69")) {
         var d = await get_Lyon_Data(FinalData, dataString);
         console.log("updated lyon RT");
       } else {
@@ -112,7 +125,7 @@ io.sockets.on("connection", function(socket) {
         console.log("updated", commune, " RT");
       }
     }
-    
+
     // console.log(data[0]);
     var query = encodeURIComponent(`PREFIX ex: <http://example.org/#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

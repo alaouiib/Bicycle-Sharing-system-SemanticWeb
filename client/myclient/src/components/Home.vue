@@ -2,6 +2,14 @@
   <div class="body">
     <div class="wrapper">
       <div class="flex-container">
+        <b-modal
+          :active.sync="isComponentModalActive"
+          has-modal-card
+          full-screen
+          :can-cancel="false"
+        >
+          <modal-form v-bind="formProps"></modal-form>
+        </b-modal>
         <div class="cities">
           <div
             v-for="(city, index) in cities"
@@ -74,10 +82,48 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import moment from "moment";
+import { ModalProgrammatic as Modal } from "buefy";
+const ModalForm = {
+  props: ["email", "password"],
+  template: `
+            <div class="modal-card" style="width: auto">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Login</p>
+                </header>
+                <section class="modal-card-body">
+                    <b-field label="Email">
+                        <b-input
+                            type="email"
+                            :value="email"
+                            placeholder="Your email"
+                            required>
+                        </b-input>
+                    </b-field>
 
+                    <b-field label="Password">
+                        <b-input
+                            type="password"
+                            :value="password"
+                            password-reveal
+                            placeholder="Your password"
+                            required>
+                        </b-input>
+                    </b-field>
+
+                    <b-checkbox>Remember me</b-checkbox>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button" type="button" @click="$parent.close()">Close</button>
+                    <button class="button is-primary">Login</button>
+                </footer>
+            </div>
+        `
+};
 export default {
   name: "Home",
-
+  components: {
+    ModalForm
+  },
   data() {
     return {
       a: "working",
@@ -137,7 +183,6 @@ export default {
         "Mulhouse",
         "Namur",
         "Nancy",
-        "Nantes",
         "Rouen",
         "Santander",
         "Seville",
@@ -151,7 +196,12 @@ export default {
       isInputDisabled: true,
       isHidden: false,
       deleteClass: ["addCity", this.isHidden, "animated", "fadeInUp"],
-      boxClass: ["box", "animated", "fadeInUp"]
+      boxClass: ["box", "animated", "fadeInUp"],
+      isComponentModalActive: false,
+      formProps: {
+        email: "hamidHub@hamid.com",
+        password: "testing"
+      }
 
       // boxImageSrc: ''
     };
@@ -449,7 +499,16 @@ export default {
             this.$buefy.snackbar.open({
               message: `${cityName.toUpperCase()} n'est pas encore supporté 🥺`,
               type: "is-warning",
-              position: "is-top"
+              position: "is-top",
+              actionText: "Add city ",
+              duration: 5000,
+              onAction: () => {
+                this.cities.push(cityName);
+                localStorage.setItem("cities", JSON.stringify(this.cities));
+                this.$router.push({
+                  path: "createCity?cityName=" + cityName
+                });
+              }
             });
           }, 500);
         }

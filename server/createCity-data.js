@@ -20,40 +20,47 @@ const fetch = require("node-fetch");
 //     status: 'OPEN',
 //     last_update: 1573419853000 }
 
-module.exports = function get_newCity_Data(FinalData, d, cityName) {
+module.exports = function get_createdCity_Data(FinalData, d, url, fileKeys, cityName) {
+//   console.log("create city :");
+//   console.log(fileKeys);
+//   console.log('====',fileKeys.available_bikes);
+  
   return new Promise((resolve, reject) => {
-    fetch_data(
-      `https://api.jcdecaux.com/vls/v1/stations?contract=${cityName}&apiKey=e8c594113022ec7ce0aedc4eba8fa4137a78f38b`
-    )
+    fetch_data(url)
       .then(response => {
         let stations = response;
-
         stations.forEach(station => {
           let element = {}; // station object
           // element.station_id = station_data.gid;
-          element.FREE_BIKES = Number.parseInt(station[available_bikes]);
-          element.EMPTY_SLOTS = Number.parseInt(station.available_bike_stands);
+
+          element.FREE_BIKES = Number.parseInt(station[fileKeys.available_bikes]);
+          element.EMPTY_SLOTS = Number.parseInt(station[fileKeys.available_bike_stands]);
           element.TOTAL_SLOTS = element.FREE_BIKES + element.EMPTY_SLOTS;
 
-          element.LAST_UPDATE = station.last_update;
+          element.LAST_UPDATE = station[fileKeys.last_update];
           // get only 10 first digits of the unix number
-          var str_lastUpd = (element.LAST_UPDATE).toString(); 
-          str_lastUpd = (str_lastUpd.split('').slice(0, 10)).join('');
+          var str_lastUpd = element.LAST_UPDATE.toString();
+          str_lastUpd = str_lastUpd
+            .split("")
+            .slice(0, 10)
+            .join("");
           element.LAST_UPDATE = Number.parseInt(str_lastUpd);
 
-          element.ZIP_CODE = Number.parseInt(station.number);
-          if (station.banking == true) {
+          element.ZIP_CODE = Number.parseInt(station[fileKeys.code_postale]);
+          if (station[fileKeys.banking] == true) {
             element.CB_PAYMENT = 1;
           } else {
             element.CB_PAYMENT = 0;
           }
           element.NAME = station.name;
-          element.LATITUDE = station.position.lat;
-          element.LONGITUDE = station.position.lng;
+          element.LATITUDE = station[fileKeys.position].lat;
+          element.LONGITUDE = station[fileKeys.position].lng;
           element.ID = `${element.NAME}(${element.ZIP_CODE})`; // to be slugifyed after
-          element.ADDRESS = `${station.address}`;
-          element.COMMUNE = station.contract_name;
-          element.STATUS = station.status;
+          element.ADDRESS = `${station[fileKeys.address]}`;
+          element.COMMUNE = station[fileKeys.commune];
+          element.STATUS = station[fileKeys.status];
+        //   console.log(element);
+          
           FinalData.push(element);
         });
 
