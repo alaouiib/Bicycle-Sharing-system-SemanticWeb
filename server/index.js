@@ -101,8 +101,7 @@ app.get("/weather/:latlon", async (req, res) => {
 // parser Lyon: https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171
 // parser rennes
 
-// socket actions
-
+// REAL TIME Handling: socket actions
 io.sockets.on("connection", function(socket) {
   socket.on("updateData", async function(data) {
     var lat = data[0];

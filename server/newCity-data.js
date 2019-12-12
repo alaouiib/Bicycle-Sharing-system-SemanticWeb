@@ -31,7 +31,7 @@ module.exports = function get_newCity_Data(FinalData, d, cityName) {
         stations.forEach(station => {
           let element = {}; // station object
           // element.station_id = station_data.gid;
-          element.FREE_BIKES = Number.parseInt(station[available_bikes]);
+          element.FREE_BIKES = Number.parseInt(station.available_bikes);
           element.EMPTY_SLOTS = Number.parseInt(station.available_bike_stands);
           element.TOTAL_SLOTS = element.FREE_BIKES + element.EMPTY_SLOTS;
 
