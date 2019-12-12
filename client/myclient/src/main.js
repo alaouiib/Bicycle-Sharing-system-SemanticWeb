@@ -6,13 +6,17 @@ import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import router from './router'
 import './../node_modules/bulma/css/bulma.css';
-import VueSocketIO from 'vue-socket.io'
+// import VueSocketIO from 'vue-socket.io'
 
-Vue.use(Buefy)
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: 'http://localhost:3000', //options object is Optional
-}));
+Vue.use(Buefy, {
+  defaultIconPack: 'fas',
+  defaultContainerElement: '#app',
+  // ...
+})
+// Vue.use(new VueSocketIO({
+//   debug: true,
+//   connection: 'http://localhost:3000', //options object is Optional
+// }));
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 // Vue.prototype.moment = moment;

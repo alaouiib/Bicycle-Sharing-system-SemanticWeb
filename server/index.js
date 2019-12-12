@@ -15,9 +15,12 @@ let newAddedCities = [];
 const get_Saintetienne_Data = require("./saint-etienne-data");
 const get_Lyon_Data = require("./lyon-data");
 const get_newCity_Data = require("./newCity-data");
+const get_createCity_Data = require("./createCity-data");
+
 /** =========== Main() ============*/
 // first : get data of Saint-Etienne and Lyon
 get_data(dataString, FinalData).catch(err => console.error(err));
+
 // socket interaction to add some realtime to the app
 
 /** ============================== */
@@ -66,27 +69,62 @@ app.get("/createCity", async (req, res) => {
     message: `the ${newCity_name}  city has been added successfully ! `
   });
 });
+app.use(express.json());
+app.post("/createNewCity", async (req, res) => {
+  let fileKeys = req.body.fileKeys;
+  let url = req.body.url;
+  let cityName = req.body.cityName;
+  console.log(fileKeys, url);
+  var d_createCity = await get_createCity_Data(
+    FinalData,
+    dataString,
+    url,
+    fileKeys,
+    cityName
+  );
+  res.json({
+    message: `success message ! columns names received !! `
+  });
+});
 app.get("/weather/:latlon", async (req, res) => {
   console.log(req.params.latlon);
   var latlon = req.params.latlon;
   const url = `https://api.darksky.net/forecast/9e7042c94f627252694fde689da9a27f/${latlon}`;
   console.log(url);
-  
-  var fetch_response = await fetch(url)
+
+  var fetch_response = await fetch(url);
   var json = await fetch_response.json();
   // console.log(json);
-  
+
   res.json(json);
 });
 // parser Lyon: https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171
 // parser rennes
 
-// socket actions
-
+// REAL TIME Handling: socket actions
 io.sockets.on("connection", function(socket) {
-  socket.on("updateData", function(data) {
+  socket.on("updateData", async function(data) {
     var lat = data[0];
     var lon = data[1];
+    var commune = data[2];
+    var zip_code = data[3];
+    if (zip_code) {
+      if (zip_code.match("^42")) {
+        // var x  = FinalData.filter(station =>
+        //   station.ZIP_CODE.contains(zip_code)
+        // );
+
+        var d = await get_Saintetienne_Data([], [], [], FinalData, dataString);
+        console.log("updated sainte RT");
+      } else if (zip_code.match("^69")) {
+        var d = await get_Lyon_Data(FinalData, dataString);
+        console.log("updated lyon RT");
+      } else {
+        var d_newCity = await get_newCity_Data(FinalData, dataString, commune);
+        console.log("updated", commune, " RT");
+      }
+    }
+
     // console.log(data[0]);
     var query = encodeURIComponent(`PREFIX ex: <http://example.org/#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -101,7 +139,7 @@ io.sockets.on("connection", function(socket) {
           ?station  geo:lat ?lat.
           ?station  geo:lon ?lon.
           ?station  rel:FREE_BIKES ?FREE_BIKES.
-          ?station rel:EMPTY_SLOTS ?EMPTY_SLOTS.
+          ?station  rel:EMPTY_SLOTS ?EMPTY_SLOTS.
           ?station  rel:LAST_UPDATE ?LAST_UPDATE.
          
       FILTER (regex(str(?lat),"${lat}") && regex(str(?lon),"${lon}"))}`);
@@ -136,7 +174,8 @@ io.sockets.on("connection", function(socket) {
           resultData[0].EMPTY_SLOTS.value,
           resultData[0].LAST_UPDATE.value
         ]);
-      }).catch(err => console.error(err,'error socket fetch !'))
+      })
+      .catch(err => console.error(err, "error socket fetch !"));
   });
 });
 

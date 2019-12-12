@@ -2,20 +2,28 @@
   <div class="body">
     <div class="wrapper">
       <div class="flex-container">
+        <b-modal
+          :active.sync="isComponentModalActive"
+          has-modal-card
+          full-screen
+          :can-cancel="false"
+        >
+          <modal-form v-bind="formProps"></modal-form>
+        </b-modal>
         <div class="cities">
           <div
             v-for="(city, index) in cities"
             @click="selected(city)"
-            class="box"
+            :class="boxClass"
             :key="index"
           >
-            <a @click="deleteItem(index)" class="delete is-small"></a>
-
+            <!-- @click="deleteItem(index)" -->
+            <a @click="deleteItem($event, index)" class="delete is-small"></a>
             <img :src="boxImages[index]" alt="" />
             <p>{{ city.toUpperCase() }}</p>
           </div>
           <div
-            :class="{ addCity, isHidden }"
+            :class="deleteClass"
             @click="
               isActive = !isActive;
               isInputDisabled = true;
@@ -31,7 +39,10 @@
             title="Ajouter ville:"
             :active.sync="isActive"
             aria-close-label="Close message"
-            @close="isInputDisabled = !isInputDisabled"
+            @close="
+              isInputDisabled = !isInputDisabled;
+              isHidden = false;
+            "
           >
             <form @submit.prevent="addCity(selectedCity)">
               <input
@@ -49,7 +60,7 @@
             </form>
           </b-message>
         </div>
-        <div class="map">
+        <div class="map animated fadeInRight">
           <div class="searchInput" v-if="!isInputDisabled">
             <input
               @keyup="searchStation"
@@ -71,10 +82,48 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import moment from "moment";
+import { ModalProgrammatic as Modal } from "buefy";
+const ModalForm = {
+  props: ["email", "password"],
+  template: `
+            <div class="modal-card" style="width: auto">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Login</p>
+                </header>
+                <section class="modal-card-body">
+                    <b-field label="Email">
+                        <b-input
+                            type="email"
+                            :value="email"
+                            placeholder="Your email"
+                            required>
+                        </b-input>
+                    </b-field>
 
+                    <b-field label="Password">
+                        <b-input
+                            type="password"
+                            :value="password"
+                            password-reveal
+                            placeholder="Your password"
+                            required>
+                        </b-input>
+                    </b-field>
+
+                    <b-checkbox>Remember me</b-checkbox>
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button" type="button" @click="$parent.close()">Close</button>
+                    <button class="button is-primary">Login</button>
+                </footer>
+            </div>
+        `
+};
 export default {
   name: "Home",
-
+  components: {
+    ModalForm
+  },
   data() {
     return {
       a: "working",
@@ -134,7 +183,6 @@ export default {
         "Mulhouse",
         "Namur",
         "Nancy",
-        "Nantes",
         "Rouen",
         "Santander",
         "Seville",
@@ -146,7 +194,15 @@ export default {
       ],
       stationTemp: "",
       isInputDisabled: true,
-      isHidden: false
+      isHidden: false,
+      deleteClass: ["addCity", this.isHidden, "animated", "fadeInUp"],
+      boxClass: ["box", "animated", "fadeInUp"],
+      isComponentModalActive: false,
+      formProps: {
+        email: "hamidHub@hamid.com",
+        password: "testing"
+      }
+
       // boxImageSrc: ''
     };
   },
@@ -266,9 +322,27 @@ export default {
         console.log("station pas existante !");
       }
     },
-    async deleteItem(index) {
-      this.cities.splice(index, 1);
-      localStorage.setItem("cities", JSON.stringify(this.cities));
+    async deleteItem(event, index) {
+      this.$buefy.dialog.confirm({
+        title: "Suppression de ville",
+        message: `Voulez vous vraiment supprimer la ville de ${this.cities[
+          index
+        ].toUpperCase()} ?`,
+        confirmText: ` Supprimer ${this.cities[index].toUpperCase()}`,
+        type: "is-danger",
+        hasIcon: true,
+        onConfirm: () => {
+          this.isInputDisabled = true;
+          event.target.parentElement.classList.remove("fadeInUp");
+          event.target.parentElement.classList.add("zoomOutDown");
+          this.$buefy.toast.open("Ville supprimé !");
+          setTimeout(() => {
+            this.cities.splice(index, 1);
+            localStorage.setItem("cities", JSON.stringify(this.cities));
+          }, 1000);
+          localStorage.setItem("cities", JSON.stringify(this.cities));
+        }
+      });
     },
     async make_request(query, zoom) {
       const res = await this.$axios.post(
@@ -425,7 +499,16 @@ export default {
             this.$buefy.snackbar.open({
               message: `${cityName.toUpperCase()} n'est pas encore supporté 🥺`,
               type: "is-warning",
-              position: "is-top"
+              position: "is-top",
+              actionText: "Add city ",
+              duration: 5000,
+              onAction: () => {
+                this.cities.push(cityName);
+                localStorage.setItem("cities", JSON.stringify(this.cities));
+                this.$router.push({
+                  path: "createCity?cityName=" + cityName
+                });
+              }
             });
           }, 500);
         }
@@ -638,7 +721,7 @@ export default {
     }
   },
   mounted() {
-    if (JSON.parse(localStorage.getItem("cities")).length > 0) {
+    if (JSON.parse(localStorage.getItem("cities"))) {
       this.cities = JSON.parse(localStorage.getItem("cities"));
       // console.log(this.cities);
     } else {

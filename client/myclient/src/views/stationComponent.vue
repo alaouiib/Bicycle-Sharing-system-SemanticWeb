@@ -23,7 +23,7 @@
         </b-tooltip>
       </div>
 
-      <div class="container">
+      <div class="container animated fadeInLeft">
         <div class="columns">
           <div class="column" style="margin-bottom: -80px; margin-top: -7%;">
             <div class="card">
@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      <div class="container">
+      <div class="container animated fadeInRight">
         <div class="columns">
           <div class="column">
             <div class="card">
@@ -161,7 +161,7 @@
       </div>
 
       <!-- v-if="!newCityPage" -->
-      <div class="container">
+      <div class="container animated fadeInLeft">
         <div class="columns">
           <div class="column" style="">
             <b-message
@@ -278,24 +278,53 @@ export default {
         }
       ],
       summary: "",
-      temperature: ""
+      temperature: "",
+      possibleCities: [
+        "Amiens",
+        "Besançon",
+        "Brisbane",
+        "Cergy-Pontoise",
+        "creteil",
+        "Cordoue",
+        "Dublin",
+        "Gijon",
+        "Goteborg",
+        "Kazan",
+        "Lillestrøm",
+        "Ljubljana",
+        "Luxembourg",
+        "Lyon",
+        "Marseille",
+        "Mulhouse",
+        "Namur",
+        "Nantes",
+        "Nancy",
+        "Rouen",
+        "Santander",
+        "Seville",
+        "Toulouse",
+        "Toyama",
+        "Valence",
+        "Vienne",
+        "Vilnius"
+      ],
+      updateInterval: ""
     };
   },
-  sockets: {
-    connect: function() {
-      console.log("yeeeey, socket connected !");
-    },
-    dataUpdated: function(data) {
-      this.FREE_BIKES = data[0];
-      this.EMPTY_SLOTS = data[1];
-      this.LAST_UPDATE = data[2];
+  // sockets: {
+  //   // connect: function() {
+  //   //   console.log("yeeeey, socket connected !");
+  //   // },
+  //   // dataUpdated: function(data) {
+  //   //   this.FREE_BIKES = data[0];
+  //   //   this.EMPTY_SLOTS = data[1];
+  //   //   this.LAST_UPDATE = data[2];
+  //   //   var now = moment(new Date()).unix(); //todays date
+  //   //   var diff = (now - this.LAST_UPDATE) / 60;
 
-      var now = moment(new Date()).unix(); //todays date
-      var diff = (now - this.LAST_UPDATE) / 60;
-
-      this.LAST_UPDATE = Math.floor(diff);
-    }
-  },
+  //   //   this.LAST_UPDATE = Math.floor(diff);
+  //   // }
+  // },
   methods: {
     async addVideo(video) {
       console.log(video);
@@ -306,14 +335,86 @@ export default {
       this.videosCities.push(newVideo);
       console.log(this.videosCities);
       localStorage.setItem("videosCities", JSON.stringify(this.videosCities));
+    },
+
+    // this function handles the real time update of dynamic data
+    async updateCity(communeName, zip_code) {
+      if (zip_code.match("^42")) {
+        let resp = await fetch(
+          "http://cors-anywhere.herokuapp.com/https://saint-etienne-gbfs.klervi.net/gbfs/en/station_information.json"
+        );
+        let array = await resp.json();
+        let dataArr = array.data.stations;
+        // console.log(dataArr);
+        var cityData = dataArr.filter(
+          city => city.lon == this.lon && city.lat == this.lat
+        );
+        let stationID = cityData[0].station_id;
+        // console.log(stationID);
+
+        let response = await fetch(
+          "http://cors-anywhere.herokuapp.com/https://saint-etienne-gbfs.klervi.net/gbfs/en/station_status.json"
+        );
+        let data = await response.json();
+        // console.log("sainte");
+        var dataArr2 = data.data.stations;
+        var updatedData = dataArr2.filter(city => city.station_id == stationID);
+        this.FREE_BIKES = updatedData[0].num_bikes_available;
+        this.EMPTY_SLOTS = updatedData[0].num_docks_available;
+        this.LAST_UPDATE = updatedData[0].last_reported;
+        var now = moment(new Date()).unix(); //todays date
+        var diff = (now - this.LAST_UPDATE) / 60;
+
+        this.LAST_UPDATE = Math.floor(diff);
+      } else if (zip_code.match("^69")) {
+        let response = await fetch(
+          "https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=1.1.0&outputformat=GEOJSON&request=GetFeature&typename=jcd_jcdecaux.jcdvelov&SRSNAME=urn:ogc:def:crs:EPSG::4171"
+        );
+        let data = await response.json();
+        // console.log("lyon");
+        // console.log(data.features[0]);
+        let cityData = data.features.filter(
+          city =>
+            city.properties.lng == this.lon && city.properties.lat == this.lat
+        );
+        cityData[0] = cityData[0].properties;
+        // console.log( cityData[0].available_bike_stands);
+
+        this.FREE_BIKES = cityData[0].available_bikes;
+        this.EMPTY_SLOTS = cityData[0].available_bike_stands;
+        this.LAST_UPDATE = moment(cityData[0].last_update).unix();
+        let now = moment(new Date()).unix(); //todays date
+        let diff = (now - this.LAST_UPDATE) / 60;
+        this.LAST_UPDATE = Math.floor(diff);
+      } else {
+        var lowerCaseArr = this.possibleCities.map(city => city.toLowerCase());
+        if (lowerCaseArr.indexOf(communeName) != -1) {
+          let response = await fetch(
+            `https://api.jcdecaux.com/vls/v1/stations?contract=${communeName}&apiKey=e8c594113022ec7ce0aedc4eba8fa4137a78f38b`
+          );
+          let data = await response.json();
+          let cityData = data.filter(
+            city =>
+              city.position.lng == this.lon && city.position.lat == this.lat
+          );
+          // console.log(cityData);
+
+          this.FREE_BIKES = cityData[0].available_bikes;
+          this.EMPTY_SLOTS = cityData[0].available_bike_stands;
+          this.LAST_UPDATE = moment(cityData[0].last_update).unix();
+          let now = moment(new Date()).unix(); //todays date
+          let diff = (now - this.LAST_UPDATE) / 60;
+          this.LAST_UPDATE = Math.floor(diff);
+        } else {
+          console.log(communeName, "created city, needs URL !");
+        }
+      }
     }
   },
   mounted() {
-    // each 1 minute, update data
-    setInterval(() => {
-      console.log("sent");
-      this.$socket.emit("updateData", [this.lat, this.lon]);
-    }, 60000);
+    // set the videoscities array as new variable of localstorage
+    localStorage.setItem("videosCities", JSON.stringify(this.videosCities));
+
     // initialise the videos about each city's bicycle company
     if (JSON.parse(localStorage.getItem("videosCities"))) {
       this.videosCities = JSON.parse(localStorage.getItem("videosCities"));
@@ -471,9 +572,28 @@ export default {
           `Une erreur s'est parvenue, veuillez actualiser la page !🥺`
         );
       });
+    // each 1 minute, update data
 
+    this.updateInterval = setInterval(() => {
+      this.updateCity(this.COMMUNE, this.ZIP_CODE);
+      console.log("updated..");
+
+      // clearInterval(updateInt);
+    }, 5000);
+
+    // setTimeout(() => {
+    //   this.$socket.emit("updateData", [this.lat, this.lon,this.COMMUNE]);
+    // }, 1000);
+    // setInterval(() => {
+    //   console.log("sent");
+    //   this.$socket.emit("updateData", [this.lat, this.lon, this.COMMUNE,this.ZIP_CODE]);
+    // }, 120000);
     // let vars = res.data.head.vars; //  features requested
     // let result = res.data.results.bindings; // results
+  },
+  destroyed() {
+    console.log("destroyed");
+    clearInterval(this.updateInterval);
   }
 };
 </script>
