@@ -1,3 +1,5 @@
+NOTE: this is the official description of the project written by Mr. [Antoine Zimmermann](https://www.emse.fr/~zimmermann/).
+
 
 # Web semantic project about a bicycle station sharing system
 # Semantic Web project
@@ -53,4 +55,4 @@ The previous steps constitute the bare minimal. You should then try to extend yo
 + store the history of availabilities, and provide statistics;
 + use weather or air quality data as well;
 + provide a trip planning functionality (go from Place 1 to Place 2 by taking the available bike closest to Place  and bringing it to the station with available space, closest to Place 2).
-NOTE: this is the official description of the project written by : by Antoine Zimmermann.
+
