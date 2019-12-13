@@ -33,7 +33,7 @@
                 xml:lang="fr"
                 :content="label"
               >
-                Station: {{ label.replace(/#/gi, "") }}
+                Station: {{ label.replace(/#/gi, "") }} ({{ temperature }}&deg;)
               </div>
 
               <div>
@@ -413,8 +413,9 @@ export default {
   },
   mounted() {
     // set the videoscities array as new variable of localstorage
-    localStorage.setItem("videosCities", JSON.stringify(this.videosCities));
-
+      // if (localStorage.getItem('videosCities') != null) {
+      //   localStorage.setItem("videosCities", JSON.stringify(this.videosCities));
+      // }
     // initialise the videos about each city's bicycle company
     if (JSON.parse(localStorage.getItem("videosCities"))) {
       this.videosCities = JSON.parse(localStorage.getItem("videosCities"));
@@ -425,18 +426,7 @@ export default {
     var ID = this.$route.params.id;
     // var ZIP_CODE = this.$route.params.ZIP_CODE;
     this.ID = ID;
-    var videos = JSON.parse(localStorage.getItem("videosCities"));
-    var vid = videos.filter(video => {
-      return Object.keys(video)[0] == this.COMMUNE;
-    });
-    if (vid.length > 0) {
-      this.videoIntegrationCode = vid[0][this.COMMUNE];
-      // this.newCityPage = true;
-      // console.log(this.newCityPage);
-    } else {
-      this.newCityPage = true;
-      // this.isActive = !this.isActive;
-    }
+
     //query data for this specific station
     var query = `query=PREFIX+ex%3A+%3Chttp%3A%2F%2Fexample.org%2F%23%3E%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0APREFIX+geo%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23%3E%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0APREFIX+rel%3A+%3Chttp%3A%2F%2Frelations.example.com%2F%3E%0A%0A++++SELECT+%3Fstation+%3Flabel+%3Flat+%3Flon+%3FSTATUS+%3FADDRESS+%3FFREE_BIKES+%3FEMPTY_SLOTS+%3FTOTAL_SLOTS+%3FLAST_UPDATE+%3FLAST_UPDATE+%3FCB_PAYMENT+%3FZIP_CODE+%3FCOMMUNE%0A++++WHERE+%7B%0A++%09++%3Fstation+a+geo%3ASpatialThing.+%0A++++++%3Fstation++rdfs%3Alabel+%3Flabel.%0A++++++%3Fstation++geo%3Alat+%3Flat.%0A++++++%3Fstation++geo%3Alon+%3Flon.%0A+++++%3Fstation++rel%3AADDRESS+%3FADDRESS.%0A++++++%3Fstation++rel%3AFREE_BIKES+%3FFREE_BIKES.%0A++++++%3Fstation+rel%3AEMPTY_SLOTS+%3FEMPTY_SLOTS.%0A++++++%3Fstation++rel%3ATOTAL_SLOTS+%3FTOTAL_SLOTS.%0A+++++%3Fstation++rel%3ALAST_UPDATE+%3FLAST_UPDATE.%0A++++++%3Fstation%20%20rel%3ASTATUS%20%3FSTATUS.%0A++++++%3Fstation+rel%3ACB_PAYMENT+%3FCB_PAYMENT.%0A++++++%3Fstation++rel%3AZIP_CODE+%3FZIP_CODE+.%0A++++++%3Fstation++rel%3ACOMMUNE+%3FCOMMUNE.%0A++FILTER+regex(str(%3Fstation)%2C%22${ID}%22)%0A++%7D%0A`;
     this.$axios
@@ -573,7 +563,23 @@ export default {
         );
       });
     // each 1 minute, update data
+    var videos = JSON.parse(localStorage.getItem("videosCities"));
+    console.log(videos);
+    console.log(this.COMMUNE);
 
+    var vid = videos.filter(video => {
+      return Object.keys(video)[0] == this.COMMUNE;
+    });
+    console.log(vid);
+
+    if (vid.length > 0) {
+      this.videoIntegrationCode = vid[0][this.COMMUNE];
+      // this.newCityPage = true;
+      // console.log(this.newCityPage);
+    } else {
+      this.newCityPage = true;
+      // this.isActive = !this.isActive;
+    }
     this.updateInterval = setInterval(() => {
       this.updateCity(this.COMMUNE, this.ZIP_CODE);
       console.log("updated..");
