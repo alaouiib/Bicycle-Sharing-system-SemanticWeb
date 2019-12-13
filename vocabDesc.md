@@ -13,10 +13,3 @@
 + [x] COMMUNE
 + [x] STATUS
 
-## some notes
-+ dynamic data: time, free bikes, empty slots
-+ sparql GENERATE
-+ spatialThing TO BicylceSystem..
-+ add vocab description (html page)
-+ [x] probleme icones..
-+ add bicyles paths
