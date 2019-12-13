@@ -1,4 +1,4 @@
-NOTE: this is the official description of the project written by Mr. [Antoine Zimmermann](https://www.emse.fr/~zimmermann/).
+> NOTE: this is the official description of the project written by Mr. [Antoine Zimmermann](https://www.emse.fr/~zimmermann/).
 
 
 # Web semantic project about a bicycle station sharing system
